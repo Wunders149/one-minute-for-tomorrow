@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Writing Screen - One Minute for Tomorrow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="../assets/styles.css" rel="stylesheet"/>
+    <link href="../assets/styles.css" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ecb613",
+                        "background-light": "#f8f8f6",
+                        "background-dark": "#221d10",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    keyframes: {
+                        pulseSoft: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulseSoft 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased overflow-hidden h-screen w-full flex flex-col relative selection:bg-primary/30 selection:text-white">
+    <!-- Gradient Overlay for Midnight Vibe -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none z-0"></div>
+    
+    <!-- Top Bar / Timer -->
+    <header class="relative z-10 w-full pt-6 pb-4 flex items-center justify-between px-6">
+        <button onclick="goHome()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300">
+            <span class="material-symbols-outlined text-neutral-900 dark:text-white hover:text-primary">arrow_back</span>
+        </button>
+        <div class="flex flex-col items-center gap-1">
+            <!-- Minimalist Timer -->
+            <div class="flex items-baseline gap-1 animate-pulse-slow">
+                <span id="timer" class="text-primary text-4xl font-light tracking-wider font-mono tabular-nums leading-none drop-shadow-md">01:00</span>
+            </div>
+            <p class="text-white/40 text-[10px] uppercase tracking-[0.2em] font-medium">Remaining</p>
+        </div>
+        <div class="w-10"></div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <main class="relative z-10 flex-1 flex flex-col w-full px-6 max-w-md mx-auto">
+        <!-- Large Text Input -->
+        <div class="flex-1 flex flex-col py-4">
+            <textarea id="wishInput" autofocus class="w-full flex-1 bg-transparent border-none p-0 text-xl md:text-2xl font-normal leading-relaxed text-white/90 placeholder:text-white/20 focus:ring-0 focus:outline-none resize-none caret-primary" placeholder="Write to your future self... What is your wish for tomorrow?" maxlength="200"></textarea>
+        </div>
+    </main>
+    
+    <!-- Bottom Actions Toolbar -->
+    <div class="relative z-20 w-full bg-background-dark/80 backdrop-blur-md border-t border-white/5">
+        <div class="flex items-center justify-between px-6 py-3 max-w-md mx-auto">
+            <!-- Character Count (MetaText) -->
+            <div class="flex items-center gap-2">
+                <p id="charCount" class="text-white/30 text-xs font-medium tabular-nums">0/200</p>
+            </div>
+            <!-- Done Button (FAB style but inline) -->
+            <button onclick="submitWish()" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 transition-colors text-background-dark rounded-full px-5 py-2 h-10 shadow-[0_0_15px_rgba(236,182,19,0.2)]">
+                <span class="material-symbols-outlined text-[20px] font-bold">check</span>
+                <span class="text-sm font-bold tracking-wide">Done</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- iOS Keyboard Simulation -->
+    <div class="relative z-20 w-full bg-black">
+        <div class="w-full h-[290px] bg-[#1c1c1e] flex flex-col justify-start pt-2 pb-8 px-1" data-alt="Simulated Dark iOS Keyboard Layout">
+            <!-- Keyboard Row 1 -->
+            <div class="flex justify-center gap-[6px] mb-3 px-1">
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+            </div>
+            <!-- Keyboard Row 2 -->
+            <div class="flex justify-center gap-[6px] mb-3 px-4">
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+            </div>
+            <!-- Keyboard Row 3 -->
+            <div class="flex justify-center gap-[6px] mb-3 px-1">
+                <div class="h-[42px] w-[42px] rounded-[5px] bg-[#3a3a3c] flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-lg">arrow_upward</span>
+                </div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
+                <div class="h-[42px] w-[42px] rounded-[5px] bg-[#3a3a3c] flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-lg">backspace</span>
+                </div>
+            </div>
+            <!-- Keyboard Row 4 -->
+            <div class="flex justify-center gap-[6px] px-1 mt-1">
+                <div class="h-[42px] flex-[0.25] rounded-[5px] bg-[#3a3a3c] flex items-center justify-center text-white text-xs font-medium">123</div>
+                <div class="h-[42px] flex-[0.5] rounded-[5px] bg-[#4a4a4c] shadow-sm flex items-center justify-center text-white text-sm">space</div>
+                <div class="h-[42px] flex-[0.25] rounded-[5px] bg-[#3a3a3c] flex items-center justify-center text-white text-sm">return</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/app.js"></script>
+    <script>
+        let timerInterval = null;
+        let timeRemaining = 60;
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const wishInput = document.getElementById('wishInput');
+            
+            // Start timer on load
+            startTimer();
+            
+            // Update character count
+            wishInput.addEventListener('input', function() {
+                const count = this.value.length;
+                document.getElementById('charCount').textContent = count + '/200';
+            });
+            
+            // Focus input
+            wishInput.focus();
+        });
+
+        function startTimer() {
+            timeRemaining = 60;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitWish();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeRemaining / 60);
+            const secs = timeRemaining % 60;
+            const formattedTime = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+            document.getElementById('timer').textContent = formattedTime;
+        }
+
+        function submitWish() {
+            const wishText = document.getElementById('wishInput').value.trim();
+            
+            if (!wishText) {
+                alert('Please write something before submitting.');
+                return;
+            }
+            
+            // Clear timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Add wish to app
+            const newWish = app.addWish(wishText);
+            
+            // Store current wish ID for next screen
+            sessionStorage.setItem('currentWishId', newWish.id);
+            
+            // Navigate to visibility choice
+            goTo('visibility_choice_screen');
+        }
+    </script>
+</body>
+</html>

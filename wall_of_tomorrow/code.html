@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Wall of Tomorrow</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="../assets/styles.css" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ecb613",
+                        "background-light": "#f8f8f6",
+                        "background-dark": "#221d10",
+                        "surface-dark": "#2c2616",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 1.2s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden selection:bg-primary/30">
+<div class="relative flex min-h-screen w-full flex-col">
+    <!-- TopAppBar -->
+    <header class="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md transition-colors border-b border-gray-200 dark:border-white/5">
+        <h2 class="text-xl font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white">Wall of Tomorrow</h2>
+        <button onclick="goHome()" class="group flex items-center justify-center rounded-full w-10 h-10 bg-transparent hover:bg-primary/10 transition-all duration-300 active:scale-95">
+            <span class="material-symbols-outlined text-gray-900 dark:text-white group-hover:text-primary transition-colors">arrow_back</span>
+        </button>
+    </header>
+    
+    <!-- Main Scrollable Content -->
+    <main class="flex-1 flex flex-col px-4 pt-4 pb-24">
+        <!-- HeadlineText: System Prompt -->
+        <div class="flex flex-col items-center justify-center py-8 text-center animate-fade-in-up">
+            <span class="material-symbols-outlined text-primary mb-3 text-3xl opacity-80">nights_stay</span>
+            <h2 class="text-2xl md:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white px-4">
+                What is your wish<br/><span class="text-primary">for tomorrow?</span>
+            </h2>
+            <p class="mt-3 text-sm text-gray-500 dark:text-white/40 max-w-[300px]">
+                Shared wishes from people like you.
+            </p>
+        </div>
+        
+        <!-- TextGrid: Masonry Layout -->
+        <div id="wishsGrid" class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4 mx-auto w-full max-w-4xl">
+            <!-- Wishes will be loaded here -->
+        </div>
+    </main>
+    
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 dark:border-white/5 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-xl px-6 pb-6 pt-3">
+        <div class="flex items-center justify-around max-w-md mx-auto gap-2">
+            <button onclick="goHome()" class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group">
+                <span class="material-symbols-outlined text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors text-[26px]">home</span>
+                <span class="text-[10px] font-medium text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Home</span>
+            </button>
+            <button onclick="goTo('landing_screen')" class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group">
+                <span class="material-symbols-outlined text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors text-[26px]">hourglass_empty</span>
+                <span class="text-[10px] font-medium text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Write</span>
+            </button>
+            <button class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group">
+                <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-[26px]" style="font-variation-settings: 'FILL' 1">grid_view</span>
+                <span class="text-[10px] font-medium text-primary">Wall</span>
+            </button>
+        </div>
+    </nav>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPublicWishes();
+    });
+
+    function loadPublicWishes() {
+        const grid = document.getElementById('wishsGrid');
+        const publicWishes = app.getAllWishes().filter(w => w.isVisible);
+        
+        if (publicWishes.length === 0) {
+            grid.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-16">
+                    <span class="material-symbols-outlined text-primary/40 text-5xl mb-4">lightbulb</span>
+                    <p class="text-gray-400 dark:text-white/40 text-sm">No wishes yet. Be the first to share!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        grid.innerHTML = publicWishes.map((wish, index) => `
+            <div class="break-inside-avoid relative flex flex-col gap-3 rounded-xl border border-gray-100 dark:border-white/5 bg-surface-light dark:bg-surface-dark p-5 shadow-sm hover:border-primary/30 transition-colors animate-fade-in-up" style="animation-delay: ${index * 100}ms">
+                <h3 class="text-base font-normal leading-relaxed text-gray-800 dark:text-gray-100">
+                    ${wish.text}
+                </h3>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                    <p class="text-xs font-medium text-primary uppercase tracking-wider">${app.getTimeAgo(wish.createdAt)}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+</script>
+</body>
+</html>
