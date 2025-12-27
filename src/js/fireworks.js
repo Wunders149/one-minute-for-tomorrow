@@ -19,13 +19,15 @@ class FireworkSystem {
         const tx = endX - startX;
         const ty = endY - startY;
         const duration = 0.5 + Math.random() * 0.5;
+        const angle = Math.atan2(tx, -ty);
 
         rocket.style.left = startX + 'px';
         rocket.style.top = startY + 'px';
         rocket.style.backgroundColor = color;
+        rocket.style.color = color;
         rocket.style.setProperty('--tx', tx + 'px');
         rocket.style.setProperty('--ty', ty + 'px');
-        rocket.style.boxShadow = `0 0 10px ${color}`;
+        rocket.style.setProperty('--rotate', angle + 'rad');
         rocket.style.animation = `rocket-launch ${duration}s ease-in forwards`;
 
         this.container.appendChild(rocket);

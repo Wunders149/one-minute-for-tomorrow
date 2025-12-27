@@ -94,8 +94,12 @@
 </div>
 
 <script src="../../src/js/app.js"></script>
+<script src="../../src/js/fireworks.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        fireworks.init({ randomChance: 0.1 });
+        fireworks.celebrateSequence(5, 300);
+
         const currentWish = JSON.parse(sessionStorage.getItem('currentWish'));
         if (currentWish) {
             document.getElementById('wishDisplay').classList.remove('hidden');

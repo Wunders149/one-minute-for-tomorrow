@@ -100,7 +100,12 @@
 
 <script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
+<script src="../../src/js/fireworks.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fireworks.init({ randomChance: 0.05 });
+    });
+
     async function chooseVisibility(isPublic) {
         const currentWish = JSON.parse(sessionStorage.getItem('currentWish'));
         if (!currentWish || !currentWish.id) {

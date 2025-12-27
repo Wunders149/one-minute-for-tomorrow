@@ -16,42 +16,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname)); // Serve root for files like package.json if needed
 app.use('/src', express.static(path.join(__dirname, 'src')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // MongoDB Connection
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('✓ Connected to MongoDB');
-})
-.catch(err => {
-  console.error('✗ MongoDB connection error:', err);
-  process.exit(1);
-});
-
-// API Routes
-const apiRoutes = require('./config/api-routes');
-app.use('/api', apiRoutes);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    message: 'Server is running',
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
-  });
-});
-
+// ... (omitting for context, will match actual)
+// ...
 // Root route - serve landing page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/pages/index.html'));
 });
 
-// Catch-all route for SPA - serve index.html for all other routes
+// Catch-all route for unknown API calls
+app.all('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'API endpoint not found'
+  });
+});
+
+// Catch-all route for frontend - serve index.html for all other routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/pages/index.html'));
 });
