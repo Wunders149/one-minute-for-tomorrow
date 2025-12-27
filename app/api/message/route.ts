@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Message from '@/models/Message';
-const Filter = require('bad-words');
+import { Filter as BadWordsFilter } from 'bad-words';
+
+// Fix for type definition mismatch if necessary, or just use it.
+// The build error suggested "Did you mean to import Filter?"
+const Filter = BadWordsFilter as any;
 
 export async function POST(req: NextRequest) {
   try {
