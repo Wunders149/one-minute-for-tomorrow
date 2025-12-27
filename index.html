@@ -49,7 +49,54 @@
         body {
           min-height: max(884px, 100dvh);
         }
+
+        /* Firework Animations */
+        @keyframes firework-burst {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fade-in-out {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        .firework-particle {
+            position: fixed !important;
+            pointer-events: none !important;
+            width: 6px !important;
+            height: 6px !important;
+            border-radius: 50% !important;
+            z-index: 9999 !important;
+        }
+
+        .firework-burst {
+            position: fixed !important;
+            width: 20px !important;
+            height: 20px !important;
+            pointer-events: none !important;
+            z-index: 9998 !important;
+        }
     </style>
+
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display antialiased overflow-hidden">
 <div class="relative flex h-screen w-full flex-col justify-between overflow-hidden">
@@ -110,4 +157,124 @@
     </div>
 </div>
 </body>
-</html>
+
+<script>
+    /**
+     * Firework Animation System
+     * Creates celebratory firework bursts for New Year theme
+     */
+    class FireworkSystem {
+        constructor() {
+            this.colors = ['#ecb613', '#fbbf24', '#f59e0b', '#fca5a5', '#fb7185', '#f0abfc'];
+            this.container = document.body;
+        }
+
+        /**
+         * Create a firework burst at specified coordinates
+         */
+        createFirework(x, y) {
+            const particleCount = 40 + Math.random() * 40; // 40-80 particles
+            const colors = this.colors;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
+                const velocity = 200 + Math.random() * 300; // pixels
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const duration = 1.5 + Math.random() * 0.5;
+
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.backgroundColor = color;
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.boxShadow = `0 0 6px ${color}`;
+                particle.style.animation = `firework-burst ${duration}s ease-out forwards`;
+
+                this.container.appendChild(particle);
+
+                // Remove element after animation completes
+                setTimeout(() => particle.remove(), duration * 1000);
+            }
+
+            // Add a central burst effect
+            this.createCentralBurst(x, y);
+        }
+
+        /**
+         * Create central burst effect with rings
+         */
+        createCentralBurst(x, y) {
+            const burst = document.createElement('div');
+            burst.className = 'firework-burst';
+            burst.style.left = x + 'px';
+            burst.style.top = y + 'px';
+            burst.style.backgroundColor = '#ecb613';
+            burst.style.borderRadius = '50%';
+            burst.style.boxShadow = `0 0 20px rgba(236, 182, 19, 0.8)`;
+
+            this.container.appendChild(burst);
+            setTimeout(() => burst.remove(), 1200);
+        }
+
+        /**
+         * Create random fireworks across the screen
+         */
+        createRandomFirework() {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * (window.innerHeight * 0.5) + window.innerHeight * 0.2;
+            this.createFirework(x, y);
+        }
+
+        /**
+         * Trigger multiple fireworks in sequence for celebration
+         */
+        celebrateSequence(count = 5, delay = 300) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => this.createRandomFirework(), delay * i);
+            }
+        }
+    }
+
+    // Initialize firework system
+    const fireworks = new FireworkSystem();
+
+    // Trigger fireworks on page load immediately
+    fireworks.celebrateSequence(4, 400);
+
+    // Trigger fireworks on page load (second trigger with delay)
+    document.addEventListener('DOMContentLoaded', () => {
+        // Second celebration sequence after a moment
+        setTimeout(() => {
+            fireworks.celebrateSequence(3, 500);
+        }, 2000);
+    });
+
+    // Add fireworks on button clicks
+    const buttons = document.querySelectorAll('a[href*="/src/pages/"]');
+    buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            // Create fireworks at button location
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    fireworks.createFirework(x, y);
+                }, i * 150);
+            }
+        });
+    });
+
+    // Trigger random fireworks periodically for ambient celebration
+    setInterval(() => {
+        if (Math.random() < 0.3) { // 30% chance every 8 seconds
+            fireworks.createRandomFirework();
+        }
+    }, 8000);
+</script>

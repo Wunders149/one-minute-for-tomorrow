@@ -67,8 +67,8 @@
             </p>
         </div>
         
-        <!-- TextGrid: Masonry Layout -->
-        <div id="wishsGrid" class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4 mx-auto w-full max-w-4xl">
+        <!-- TextGrid: 3 Column Layout -->
+        <div id="wishsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto w-full max-w-6xl">
             <!-- Wishes will be loaded here -->
         </div>
     </main>
@@ -112,10 +112,10 @@
 
         publicWishes.forEach((wish, index) => {
             const card = document.createElement('div');
-            card.className = 'bg-surface-dark dark:bg-surface-dark/50 p-4 rounded-lg break-inside-avoid border border-white/5 hover:border-primary/30 transition-colors';
+            card.className = 'bg-surface-dark dark:bg-surface-dark/50 p-4 rounded-lg border border-white/5 hover:border-primary/30 transition-colors h-full animate-fade-in-up';
             card.style.animationDelay = `${index * 0.1}s`;
             card.innerHTML = `
-                <p class="text-white/90 text-sm leading-relaxed">${app.truncateText(wish.text, 150)}</p>
+                <p class="text-white/90 text-sm leading-relaxed line-clamp-3">${wish.text}</p>
                 <p class="mt-3 text-xs text-white/30">${app.getTimeAgo(new Date(wish.createdAt))}</p>
             `;
             grid.appendChild(card);
