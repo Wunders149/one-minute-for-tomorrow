@@ -7,15 +7,19 @@ const wishSchema = new mongoose.Schema({
     required: [true, 'Wish text is required'],
     minlength: [1, 'Wish cannot be empty'],
     maxlength: [200, 'Wish cannot exceed 200 characters'],
-    trim: true
+    trim: true,
+    // Basic sanitization to prevent simple XSS
+    set: (val) => val.replace(/[<>]/g, '') 
   },
   isPublic: {
     type: Boolean,
-    default: false
+    default: false,
+    index: true
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    index: true
   },
   updatedAt: {
     type: Date,
@@ -23,7 +27,7 @@ const wishSchema = new mongoose.Schema({
   },
   userId: {
     type: String,
-    default: null // Can be used for future user authentication
+    default: null
   },
   tags: [{
     type: String

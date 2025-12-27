@@ -1,73 +1,10 @@
-// Shared utilities for the app
+/**
+ * OneMinuteApp - Core utilities and helpers
+ */
 class OneMinuteApp {
     constructor() {
-        this.wishes = [];
-        this.currentWish = {};
         this.timer = 60;
         this.isRunning = false;
-        this.loadFromStorage();
-    }
-
-    // Storage Management
-    loadFromStorage() {
-        try {
-            const stored = localStorage.getItem('wishes');
-            if (stored) {
-                this.wishes = JSON.parse(stored);
-            }
-        } catch (e) {
-            console.error('Failed to load wishes:', e);
-            this.wishes = [];
-        }
-    }
-
-    saveToStorage() {
-        try {
-            localStorage.setItem('wishes', JSON.stringify(this.wishes));
-        } catch (e) {
-            console.error('Failed to save wishes:', e);
-        }
-    }
-
-    // Wish Management
-    addWish(wish) {
-        // Handle both plain text and wish objects
-        const newWish = typeof wish === 'string' ? {
-            id: Date.now(),
-            text: wish,
-            isPublic: false,
-            createdAt: new Date().toISOString()
-        } : {
-            ...wish,
-            id: wish.id || Date.now(),
-            createdAt: wish.createdAt || new Date().toISOString(),
-            isPublic: wish.isPublic !== undefined ? wish.isPublic : false
-        };
-        this.wishes.push(newWish);
-        this.saveToStorage();
-        return newWish;
-    }
-
-    updateWish(id, updates) {
-        const wish = this.wishes.find(w => w.id === id);
-        if (wish) {
-            Object.assign(wish, updates);
-            this.saveToStorage();
-        }
-        return wish;
-    }
-
-    getWish(id) {
-        return this.wishes.find(w => w.id === id);
-    }
-
-    getAllWishes() {
-        return this.wishes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
-
-    deleteWish(id) {
-        this.wishes = this.wishes.filter(w => w.id !== id);
-        this.saveToStorage();
     }
 
     // Timer Management
@@ -75,7 +12,6 @@ class OneMinuteApp {
         this.timer = duration;
         this.isRunning = true;
         
-        // Clear any existing timer
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
         }
@@ -85,9 +21,7 @@ class OneMinuteApp {
             if (onTick) onTick(this.timer);
             
             if (this.timer <= 0) {
-                clearInterval(this.timerInterval);
-                this.timerInterval = null;
-                this.isRunning = false;
+                this.stopTimer();
                 if (onComplete) onComplete();
             }
         }, 1000);
@@ -109,12 +43,14 @@ class OneMinuteApp {
         return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
-    // Utility Functions
+    // Formatting Utilities
     truncateText(text, length = 100) {
+        if (!text) return '';
         return text.length > length ? text.substring(0, length) + '...' : text;
     }
 
     getTimeAgo(date) {
+        if (!date) return 'Unknown';
         const now = new Date();
         const past = new Date(date);
         const diff = Math.floor((now - past) / 1000);
@@ -124,16 +60,20 @@ class OneMinuteApp {
         if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
         return `${Math.floor(diff / 86400)}d ago`;
     }
+
+    // Navigation
+    goTo(page) {
+        window.location.href = `/src/pages/${page}.html`;
+    }
+
+    goHome() {
+        window.location.href = `/src/pages/index.html`;
+    }
 }
 
-// Global app instance
+// Global instance
 const app = new OneMinuteApp();
 
-// Navigation helpers
-function goTo(page) {
-    window.location.href = `/src/pages/${page}.html`;
-}
-
-function goHome() {
-    window.location.href = `/src/pages/index.html`;
-}
+// Legacy helper compatibility
+const goTo = (page) => app.goTo(page);
+const goHome = () => app.goHome();
