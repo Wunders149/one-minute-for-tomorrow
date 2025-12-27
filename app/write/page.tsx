@@ -4,7 +4,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import RitualButton from '@/components/RitualButton';
-import { Lock, Globe, Sparkles, ChevronRight, X } from 'lucide-react';
+import { Lock, Globe, Sparkles, ChevronRight, X, ArrowLeft } from 'lucide-react';
+import Header from '@/components/Header';
+import Navigation from '@/components/Navigation';
+import Card from '@/components/Card';
 
 type Phase = 'WRITING' | 'CHOICE' | 'CONFIRMATION';
 
@@ -14,7 +17,7 @@ export default function WritePage() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
 
@@ -38,7 +41,7 @@ export default function WritePage() {
   const handleSubmit = async (visibility: 'public' | 'private') => {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    
+
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const res = await fetch('/api/message', {
@@ -61,15 +64,17 @@ export default function WritePage() {
 
   return (
     <div className="flex-1 flex flex-col relative w-full h-full min-h-screen overflow-hidden">
-      
+      {/* Show header only in non-writing phases */}
+      {phase !== 'WRITING' && <Header title="Write" />}
+
       {/* Background Darkener */}
-      <div 
+      <div
         className="fixed inset-0 bg-black pointer-events-none transition-opacity duration-1000 z-0"
         style={{ opacity: darknessOpacity }}
       />
 
       <AnimatePresence mode="wait">
-        
+
         {/* PHASE 1: WRITING */}
         {phase === 'WRITING' && (
           <motion.div
@@ -83,7 +88,7 @@ export default function WritePage() {
             {/* Floating Timer */}
             <div className={`fixed top-12 left-0 right-0 flex justify-center pointer-events-none transition-all duration-1000 ${hasStarted ? 'opacity-100' : 'opacity-40'}`}>
                <div className={`font-mono text-xl tracking-[0.3em] transition-colors duration-1000 ${
-                 timeLeft <= 10 ? 'text-red-400 drop-shadow-[0_0_10px_rgba(248,113,113,0.5)] animate-heartbeat' : 
+                 timeLeft <= 10 ? 'text-red-400 drop-shadow-[0_0_10px_rgba(248,113,113,0.5)] animate-heartbeat' :
                  timeLeft <= 30 ? 'text-gold-400' : 'text-white/20'
                }`}>
                  00:{timeLeft.toString().padStart(2, '0')}
@@ -100,19 +105,19 @@ export default function WritePage() {
                 placeholder={hasStarted ? "" : "Tap here to begin."}
                 maxLength={500}
                 autoFocus
-                className="w-full max-w-4xl h-[60vh] bg-transparent text-3xl md:text-5xl lg:text-6xl font-serif text-white/90 placeholder:text-white/10 resize-none outline-none leading-[1.4] text-center selection:bg-gold-500/20"
+                className="w-full max-w-4xl h-[60vh] bg-transparent text-3xl md:text-5xl lg:text-6xl font-serif text-white/90 placeholder:text-white/10 resize-none outline-none leading-[1.4] text-center selection:bg-gold-500/20 border-none focus:ring-0"
                 spellCheck={false}
               />
             </div>
-            
+
             {/* Manual Finish */}
             {hasStarted && content.length > 0 && (
-               <motion.div 
+               <motion.div
                  initial={{ opacity: 0, y: 20 }}
                  animate={{ opacity: 1, y: 0 }}
                  className="fixed bottom-12 left-0 right-0 flex justify-center"
                >
-                 <button 
+                 <button
                    onClick={() => setPhase('CHOICE')}
                    className="text-white/20 hover:text-gold-400 text-xs tracking-[0.3em] uppercase transition-colors duration-500 flex items-center gap-2"
                  >
@@ -131,53 +136,69 @@ export default function WritePage() {
              animate={{ opacity: 1 }}
              exit={{ opacity: 0, y: -20, filter: "blur(5px)" }}
              transition={{ duration: 0.8 }}
-             className="flex-1 flex flex-col items-center justify-center p-6 gap-8 md:gap-16 z-10"
+             className="flex-1 flex flex-col items-center justify-center p-6 gap-8 md:gap-16 z-10 pt-20"
           >
-            <motion.h2 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="font-serif text-3xl md:text-5xl text-white/90 mb-8"
+              className="mb-8"
             >
-              Where should this go?
-            </motion.h2>
-            
-            <div className="flex flex-col md:flex-row gap-6 w-full max-w-5xl justify-center items-stretch">
+              <h2 className="font-serif text-3xl md:text-5xl text-white/90 mb-2 text-center">Where should this go?</h2>
+              <p className="text-white/40 text-base text-center">Choose the visibility of your message</p>
+            </motion.div>
+
+            <div className="flex flex-col md:flex-row gap-6 w-full max-w-5xl justify-center items-stretch px-4">
               {/* Public Card */}
-              <motion.button 
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
+              <Card
+                variant="elevated"
+                hoverEffect={true}
                 onClick={() => handleSubmit('public')}
-                disabled={isSubmitting}
-                className="group flex-1 bg-white/[0.03] border border-white/5 hover:border-gold-400/30 hover:bg-gold-900/10 p-12 rounded-2xl text-left transition-all duration-700 flex flex-col gap-6 relative overflow-hidden backdrop-blur-sm"
+                className="flex-1 p-6 md:p-12 cursor-pointer"
               >
-                <div className="absolute top-0 right-0 p-8 opacity-30 group-hover:opacity-100 transition-opacity duration-700 transform group-hover:scale-110">
-                  <Globe className="w-8 h-8 text-gold-400" />
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="font-serif text-2xl md:text-3xl text-white/80 mb-2">Share with the world</h3>
+                    <p className="text-white/40 text-base font-sans leading-relaxed">
+                      Your words will live with others on the Wall of Tomorrow.<br/>A quiet signal in the dark.
+                    </p>
+                  </div>
+                  <Globe className="w-8 h-8 text-gold-400 ml-4" />
                 </div>
-                <h3 className="font-serif text-3xl text-white/80 group-hover:text-gold-100 transition-colors">Share with the world</h3>
-                <p className="text-white/40 text-base font-sans leading-relaxed group-hover:text-white/60 transition-colors">
-                  Your words will live with others on the Wall of Tomorrow.<br/>A quiet signal in the dark.
-                </p>
-              </motion.button>
+
+                <RitualButton variant="outlined" className="w-full mt-6">
+                  Make Public
+                </RitualButton>
+              </Card>
 
               {/* Private Card */}
-              <motion.button 
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
+              <Card
+                variant="elevated"
+                hoverEffect={true}
                 onClick={() => handleSubmit('private')}
-                disabled={isSubmitting}
-                className="group flex-1 bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/10 p-12 rounded-2xl text-left transition-all duration-700 flex flex-col gap-6 backdrop-blur-sm"
+                className="flex-1 p-6 md:p-12 cursor-pointer"
               >
-                <div className="absolute top-0 right-0 p-8 opacity-30 group-hover:opacity-100 transition-opacity duration-700 transform group-hover:scale-110">
-                   <Lock className="w-8 h-8 text-white/60" />
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="font-serif text-2xl md:text-3xl text-white/60 mb-2">Keep it for myself</h3>
+                    <p className="text-white/30 text-base font-sans leading-relaxed">
+                      Some truths are sacred.<br/>This message will be sent into the void, seen by no one.
+                    </p>
+                  </div>
+                  <Lock className="w-8 h-8 text-white/60 ml-4" />
                 </div>
-                <h3 className="font-serif text-3xl text-white/60 group-hover:text-white transition-colors">Keep it for myself</h3>
-                <p className="text-white/30 text-base font-sans leading-relaxed group-hover:text-white/50 transition-colors">
-                  Some truths are sacred.<br/>This message will be sent into the void, seen by no one.
-                </p>
-              </motion.button>
+
+                <RitualButton variant="outlined" className="w-full mt-6">
+                  Keep Private
+                </RitualButton>
+              </Card>
             </div>
+
+            <button
+              onClick={() => setPhase('WRITING')}
+              className="mt-8 flex items-center text-white/40 hover:text-white/70 text-sm transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to writing
+            </button>
           </motion.div>
         )}
 
@@ -188,42 +209,52 @@ export default function WritePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5 }}
-            className="flex-1 flex flex-col items-center justify-center p-8 text-center z-10"
+            className="flex-1 flex flex-col items-center justify-center p-8 text-center z-10 pt-20"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
             >
-              <Sparkles className="w-12 h-12 text-gold-400 mx-auto mb-10 animate-pulse-slow opacity-80" />
-              <h1 className="font-serif text-5xl md:text-7xl mb-8 text-white/90 leading-tight">
+              <Sparkles className="w-12 h-12 text-gold-400 mx-auto mb-6 animate-pulse-slow opacity-80" />
+              <h1 className="font-serif text-4xl md:text-6xl mb-4 text-white/90 leading-tight">
                 Your words are now<br />part of tomorrow.
               </h1>
+              <p className="text-white/50 max-w-md mx-auto">
+                Your message has been recorded and will remain as part of this experience.
+              </p>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2, duration: 1 }}
-              className="flex flex-col gap-8 items-center mt-16"
+              className="flex flex-col gap-6 items-center mt-12 w-full max-w-sm"
             >
-              <RitualButton onClick={() => router.push('/wall')} variant="secondary">
+              <RitualButton
+                onClick={() => router.push('/wall')}
+                variant="filled"
+                size="lg"
+                className="w-full"
+              >
                 Read Others
               </RitualButton>
-              
-              <button
+
+              <RitualButton
                 onClick={() => router.push('/')}
-                className="text-white/20 hover:text-white/50 text-[10px] uppercase tracking-[0.3em] transition-colors"
+                variant="secondary"
+                className="w-full"
               >
-                Close this moment
-              </button>
+                Return Home
+              </RitualButton>
             </motion.div>
-            
-            {/* Upward Particles (Simulated by CSS in globals or BackgroundEffects, but enhanced here potentially) */}
           </motion.div>
         )}
 
       </AnimatePresence>
+
+      {/* Show navigation only in non-writing phases */}
+      {phase !== 'WRITING' && <Navigation />}
     </div>
   );
 }
