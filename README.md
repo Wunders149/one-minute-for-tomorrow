@@ -1,207 +1,142 @@
-# One Minute for Tomorrow 🌟
+# One Minute for Tomorrow
 
-A beautiful web application where users can write and share one-minute wishes for tomorrow. The app combines a minimalist design with meaningful functionality to capture hopes and aspirations.
+A beautiful web application where users write and share one-minute wishes for tomorrow.
 
-## 📁 Project Structure
+## 📁 Project Structure (Professional)
 
 ```
 one-minute-for-tomorrow/
-├── index.html                      # Main landing page
-├── server.js                        # Node.js HTTP server
-├── assets/                          # Shared assets
-│   ├── app.js                      # Core application logic & storage
-│   └── styles.css                  # Global CSS utilities
-├── landing_screen/                 # Start screen
-│   └── code.html
-├── writing_screen/                 # 1-minute timer & text input
-│   └── code.html
-├── visibility_choice_screen/       # Privacy/sharing choice
-│   └── code.html
-├── confirmation_screen/            # Thank you & next actions
-│   └── code.html
-└── wall_of_tomorrow/               # View shared wishes
-    └── code.html
+├── src/                      # Source code
+│   ├── pages/               # HTML pages (entry points)
+│   │   ├── index.html       # Home/menu page
+│   │   ├── landing.html     # Introduction screen
+│   │   ├── writing.html     # 60-second writing screen
+│   │   ├── visibility.html  # Privacy choice screen
+│   │   ├── confirmation.html # Success screen
+│   │   └── wall.html        # Shared wishes gallery
+│   ├── js/                  # JavaScript source
+│   │   └── app.js           # Main application logic
+│   ├── css/                 # Stylesheets
+│   │   └── styles.css       # Global styles
+│   └── assets/
+│       └── images/          # Image assets (placeholder)
+├── config/                   # Configuration files
+│   └── server.config.js     # Server configuration
+├── docs/                     # Documentation
+├── server.js                # Node.js HTTP server
+├── package.json             # Project metadata
+├── .env.example             # Environment variables template
+├── .gitignore               # Git ignore rules
+└── README.md                # This file
 ```
 
-## 🎨 Design System
+## � Key Features
 
-- **Primary Color**: `#ecb613` (Gold/Yellow)
-- **Background Light**: `#f8f8f6`
-- **Background Dark**: `#221d10` (Dark Brown)
-- **Surface Dark**: `#2c2616`
-- **Font**: Inter (sans-serif)
-- **Theme**: Dark mode by default with light mode support
+- ✨ Beautiful minimalist design with Tailwind CSS
+- ⏱️ 60-second timer for focused writing
+- 🔒 Privacy control (share or keep private)
+- 🌙 Dark mode by default
+- 💾 Browser-based persistent storage (localStorage)
+- 👥 Public wall to view shared wishes
+- 📱 Responsive design for all screen sizes
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js installed on your system
+- Node.js 14 or higher
 
-### Installation & Running
+### Installation
 
-1. Navigate to the project directory:
-```bash
-cd one-minute-for-tomorrow
-```
-
-2. Start the server:
-```bash
-node server.js
-```
-
-3. Open your browser and navigate to:
-```
-http://localhost:3000
-```
+1. Navigate to project directory
+2. Start the server: `node server.js`
+3. Open `http://localhost:3000` in your browser
 
 ## 📱 Application Flow
 
-### 1. **Main Menu** (`index.html`)
-- Welcome screen with two options
-- "Start Writing" → Navigate to landing screen
-- "View Wall of Tomorrow" → Navigate to wall
-
-### 2. **Landing Screen** (`landing_screen/code.html`)
-- Sets context for the writing experience
-- Button to begin the one-minute timer
-- Back button to return home
-
-### 3. **Writing Screen** (`writing_screen/code.html`)
-- **60-second countdown timer** at the top
-- Large text input area (max 200 characters)
-- Real-time character count
-- Auto-submits when timer ends or user clicks "Done"
-- iOS-style keyboard simulation at bottom
-- Back button to cancel
-
-### 4. **Visibility Choice** (`visibility_choice_screen/code.html`)
-- User chooses whether to share their wish publicly
-- **"Yes, Share It"** → Wish appears on Wall of Tomorrow
-- **"Keep It Private"** → Wish saved locally only
-- Back button to previous screen
-
-### 5. **Confirmation Screen** (`confirmation_screen/code.html`)
-- Thank you message
-- Options to:
-  - View the Wall of Tomorrow
-  - Return to Home
-
-### 6. **Wall of Tomorrow** (`wall_of_tomorrow/code.html`)
-- Displays all public wishes in a masonry grid
-- Each wish shows:
-  - The text
-  - When it was posted (relative time)
-  - Animated entrance effect
-- Bottom navigation with:
-  - Home button
-  - Write button
-  - Wall view (active)
+1. **Home Screen** (index.html) - Choose to write or view wall
+2. **Landing Screen** (landing.html) - Introduction & motivation
+3. **Writing Screen** (writing.html) - 60-second timer + text input
+4. **Visibility Screen** (visibility.html) - Choose public or private
+5. **Confirmation Screen** (confirmation.html) - Success message
+6. **Wall of Tomorrow** (wall.html) - View all public wishes
 
 ## 💾 Data Storage
 
-All wishes are stored in the browser's **localStorage** using the `OneMinuteApp` class:
+Wishes stored in browser localStorage with `OneMinuteApp` class:
 
 ```javascript
-// Structure of a wish:
 {
-    id: timestamp,
-    text: "User's wish text",
-    isVisible: true/false,  // Public or private
-    createdAt: ISO string
+    id: number,
+    text: string,
+    createdAt: ISO8601,
+    isPublic: boolean
 }
 ```
 
-### Key Methods:
-- `addWish(text)` - Create a new wish
-- `updateWish(id, updates)` - Update wish properties
-- `getWish(id)` - Retrieve a specific wish
-- `getAllWishes()` - Get all wishes sorted by date
-- `deleteWish(id)` - Remove a wish
+## 🛠️ Technology Stack
 
-## 🛠️ Core Files
+- **Frontend**: HTML5, CSS3 (Tailwind), Vanilla JavaScript
+- **Backend**: Node.js (native http module)
+- **Storage**: Browser localStorage
+- **Icons**: Google Material Symbols
 
-### `assets/app.js`
-Contains the main `OneMinuteApp` class with methods for:
-- Wish management (CRUD operations)
-- Local storage synchronization
-- Timer management
-- Utility functions (time formatting, text truncation)
-- Navigation helpers (`goTo()`, `goHome()`)
+## 🎨 Design System
 
-### `assets/styles.css`
-Global styles including:
-- CSS variables for colors
-- Scrollbar customization
-- Animation delay utilities
-- Common patterns
+- **Primary Color**: `#ecb613` (Gold)
+- **Background Dark**: `#221d10`
+- **Background Light**: `#f8f8f6`
+- **Font**: Inter (sans-serif)
+- **Theme**: Dark mode by default
 
-### `server.js`
-Simple HTTP server that:
-- Serves all files with correct MIME types
-- Handles 404 errors
-- Logs all requests
-- Runs on `localhost:3000`
+## 📖 Documentation
 
-## 🎯 Features
+Full documentation available in `/docs`:
+- **QUICKSTART.md** - Get running in 2 minutes
+- **TECHNICAL_DOCUMENTATION.md** - Architecture & code details
+- **API_REFERENCE.md** - Function documentation
+- **DEVELOPMENT_GUIDE.md** - Setup for developers
+- **DEPLOYMENT_GUIDE.md** - Production deployment
 
-✅ **One-Minute Timer** - Motivates focused writing
-✅ **Dark Mode** - Eye-friendly interface with Tailwind CSS
-✅ **Privacy Control** - Users choose who sees their wishes
-✅ **Persistence** - Wishes saved in localStorage
-✅ **Responsive Design** - Works on mobile and desktop
-✅ **Masonry Grid** - Beautiful wall layout
-✅ **Animations** - Smooth transitions and fade-in effects
-✅ **Material Icons** - Modern icon system
+## 🔧 Development
 
-## 📐 Browser Support
+### File Locations
 
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Requires JavaScript enabled
+- **App Logic**: `src/js/app.js` - OneMinuteApp class
+- **Styles**: `src/css/styles.css` - Global CSS
+- **Pages**: `src/pages/` - HTML entry points
+- **Config**: `config/server.config.js` - Server settings
 
-## 🔧 Development Notes
+### Navigation Helpers
 
-### Navigation
-All pages use the `goTo()` and `goHome()` helper functions from `app.js`:
 ```javascript
-goTo('landing_screen');  // Navigate to a screen
-goHome();               // Return to index.html
+goTo('landing');   // Navigate to landing.html
+goHome();         // Navigate to index.html
 ```
 
-### Styling
-The project uses **Tailwind CSS** with custom Tailwind configuration in each HTML file's `<script id="tailwind-config">` section.
+### Environment
 
-### Session Management
-Session-specific data (like current wish ID) is stored in `sessionStorage` to pass data between screens without persistence.
+Copy `.env.example` to `.env` for local development:
+```
+NODE_ENV=development
+PORT=3000
+```
 
-## 📝 Customization
+## 📝 npm Scripts
 
-To customize colors, edit the Tailwind config in any HTML file:
-```javascript
-colors: {
-    "primary": "#ecb613",
-    "background-light": "#f8f8f6",
-    "background-dark": "#221d10",
-}
+```bash
+npm start    # Start the server
+npm run dev  # Development mode
+npm test     # Run tests (not yet implemented)
 ```
 
 ## 🐛 Troubleshooting
 
-**Server won't start:**
-- Ensure Node.js is installed
-- Check port 3000 is available
-- Verify you're in the correct directory
-
-**Styles not loading:**
-- Clear browser cache
-- Check that Tailwind CDN is accessible
-- Verify Internet connection for font loading
-
-**Timer not working:**
-- Check browser console for JavaScript errors
-- Ensure JavaScript is enabled
-- Try a different browser
+| Issue | Solution |
+|-------|----------|
+| Server won't start | Check Node.js is installed & port 3000 is free |
+| Styles not loading | Clear browser cache & verify CDN access |
+| Pages not found | Verify relative paths in HTML files |
+| Data not persisting | Check browser localStorage is enabled |
 
 ## 📄 License
 

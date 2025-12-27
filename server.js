@@ -27,8 +27,8 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   console.log(`Request: ${req.method} ${req.url}`);
 
-  // Handle the root path
-  let filePath = req.url === '/' ? '/index.html' : req.url;
+  // Handle the root path - serve from src/pages/
+  let filePath = req.url === '/' ? '/src/pages/index.html' : req.url;
 
   // Resolve the file path
   filePath = path.join(process.cwd(), filePath);

@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Visibility Choice - One Minute for Tomorrow</title>
+    <title>Confirmation - One Minute for Tomorrow</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet"/>
-    <link href="../assets/styles.css" rel="stylesheet"/>
+    <link href="../../src/css/styles.css" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -17,7 +17,6 @@
                         "primary": "#ecb613",
                         "background-light": "#f8f8f6",
                         "background-dark": "#221d10",
-                        "surface-dark": "#2c2616",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"]
@@ -44,69 +43,45 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px]"></div>
     </div>
     
-    <!-- Top Bar -->
-    <div class="z-10 w-full h-12 flex items-center px-6">
-        <button onclick="goHome()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300">
+    <!-- Top Back Button -->
+    <div class="z-10 w-full h-12 flex items-center px-6 absolute top-0 left-0">
+        <a href="/src/pages/index.html" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300">
             <span class="material-symbols-outlined text-neutral-900 dark:text-white hover:text-primary">arrow_back</span>
-        </button>
+        </a>
     </div>
     
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <div class="z-10 flex flex-1 flex-col items-center justify-center px-8 w-full max-w-md mx-auto">
-        <div class="mb-8 opacity-80">
-            <span class="material-symbols-outlined text-primary text-5xl font-light">visibility</span>
+        <!-- Status Icon -->
+        <div class="mb-10 opacity-90">
+            <span class="material-symbols-outlined text-primary text-5xl font-light" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
         </div>
         <h1 class="text-neutral-900 dark:text-white text-4xl font-light leading-tight tracking-tight text-center">
-            Share your wish?
+            Your words live on.
         </h1>
         <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
         <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs">
-            Choose whether others can see your wish on the Wall of Tomorrow
+            Thank you for sharing a wish for tomorrow. It has been saved.
         </p>
     </div>
     
-    <!-- Bottom Choices -->
+    <!-- Bottom Actions -->
     <div class="z-10 w-full px-6 pb-10 md:pb-12 max-w-md mx-auto">
-        <div class="flex flex-col gap-4">
-            <!-- Anonymous Option -->
-            <button onclick="chooseVisibility(true)" class="relative group w-full flex flex-col h-auto bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98] p-4">
+        <div class="flex flex-col gap-3">
+            <a href="/src/pages/wall.html" class="relative group w-full flex items-center justify-center h-14 bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98]">
                 <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                <div class="relative z-10 flex items-center justify-between">
-                    <div class="text-left">
-                        <div class="font-bold">Yes, Share It</div>
-                        <div class="text-sm font-normal opacity-80">Your wish appears on the wall</div>
-                    </div>
-                    <span class="material-symbols-outlined text-2xl">share</span>
-                </div>
-            </button>
-            
-            <!-- Private Option -->
-            <button onclick="chooseVisibility(false)" class="relative group w-full flex flex-col h-auto bg-transparent border border-primary text-primary text-lg font-bold tracking-wide rounded-xl hover:bg-primary/10 transition-all duration-300 p-4">
-                <div class="flex items-center justify-between">
-                    <div class="text-left">
-                        <div class="font-bold">Keep It Private</div>
-                        <div class="text-sm font-normal opacity-60">Your wish stays with you</div>
-                    </div>
-                    <span class="material-symbols-outlined text-2xl">lock</span>
-                </div>
-            </button>
+                <span>View Wall</span>
+            </a>
+            <a href="/src/pages/index.html" class="w-full flex items-center justify-center h-12 bg-transparent border border-neutral-300 dark:border-white/20 text-neutral-900 dark:text-white text-base font-semibold tracking-wide rounded-xl hover:bg-neutral-900/5 dark:hover:bg-white/5 transition-all duration-300">
+                <span>Back to Home</span>
+            </a>
         </div>
-        
         <p class="mt-6 text-xs text-center text-neutral-400 dark:text-white/20">
-            Both choices are saved to your collection
+            One Minute for Tomorrow
         </p>
     </div>
 </div>
 
-<script src="../assets/app.js"></script>
-<script>
-    function chooseVisibility(isVisible) {
-        const wishId = sessionStorage.getItem('currentWishId');
-        if (wishId) {
-            app.updateWish(parseInt(wishId), { isVisible });
-        }
-        goTo('confirmation_screen');
-    }
-</script>
+<script src="../../src/js/app.js"></script>
 </body>
 </html>

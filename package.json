@@ -1,0 +1,29 @@
+{
+  "name": "one-minute-for-tomorrow",
+  "version": "1.0.0",
+  "description": "A beautiful web application where users write and share one-minute wishes for tomorrow",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [
+    "wishes",
+    "new-year",
+    "reflection",
+    "mindfulness",
+    "web-app"
+  ],
+  "author": "One Minute for Tomorrow Project",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/one-minute-for-tomorrow"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
