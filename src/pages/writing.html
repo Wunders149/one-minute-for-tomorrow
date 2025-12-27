@@ -291,7 +291,7 @@
 
     <!-- Top Bar / Timer -->
     <header class="relative z-10 w-full timer-container flex items-center justify-between px-4">
-        <a href="/src/pages/index.html" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300">
+        <a href="/src/pages/landing.html" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300" title="Go back">
             <span class="material-symbols-outlined text-neutral-900 dark:text-white hover:text-primary">arrow_back</span>
         </a>
         <div class="flex flex-col items-center gap-1">
@@ -307,8 +307,8 @@
     <!-- Main Content Area -->
     <main class="relative z-10 flex-1 flex flex-col w-full px-4 writing-container mx-auto">
         <!-- Large Text Input -->
-        <div class="flex-1 flex flex-col input-container text-progress">
-            <textarea id="wishInput" autofocus class="w-full flex-1 bg-transparent border-none p-0 font-normal leading-relaxed text-white/90 placeholder:text-white/20 focus:ring-0 focus:outline-none resize-none caret-primary typing-animation" placeholder="Write to your future self... What is your one wish for tomorrow?" maxlength="200"></textarea>
+        <div class="flex-1 flex flex-col input-container text-progress mt-4">
+            <textarea id="wishInput" autofocus class="w-full flex-1 bg-transparent border-none p-4 font-normal leading-relaxed text-white/90 placeholder:text-white/20 focus:ring-0 focus:outline-none resize-none caret-primary typing-animation" placeholder="Write to your future self... What is your one wish for tomorrow?" maxlength="200"></textarea>
             <!-- Character Progress Bar -->
             <div class="char-count-bar" id="charCountBar"></div>
         </div>
@@ -318,17 +318,29 @@
             <div class="flex items-center gap-2 char-count-container">
                 <p id="charCount" class="text-white/30 text-xs font-medium tabular-nums char-count-normal">0/200</p>
             </div>
-            <!-- Done Button (FAB style but inline) -->
-            <button
-                id="submitBtn"
-                onclick="submitWish()"
-                type="button"
-                class="submit-btn flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 transition-all duration-200 text-background-dark rounded-full px-5 py-2 h-10 shadow-[0_0_15px_rgba(236,182,19,0.2)] hover:shadow-[0_0_25px_rgba(236,182,19,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[0_0_15px_rgba(236,182,19,0.2)]"
-                aria-label="Submit your wish and continue"
-                title="Submit wish (or wait for timer to finish)">
-                <span class="material-symbols-outlined text-[20px] font-bold">check</span>
-                <span class="text-sm font-bold tracking-wide">Done</span>
-            </button>
+            
+            <div class="flex items-center gap-3">
+                <!-- Secondary Back Button -->
+                <button
+                    onclick="window.location.href='/src/pages/landing.html'"
+                    type="button"
+                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white/40 hover:text-white/70 transition-colors"
+                    aria-label="Cancel and go back">
+                    Back
+                </button>
+
+                <!-- Done Button (FAB style but inline) -->
+                <button
+                    id="submitBtn"
+                    onclick="submitWish()"
+                    type="button"
+                    class="submit-btn flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 transition-all duration-200 text-background-dark rounded-full px-5 py-2 h-10 shadow-[0_0_15px_rgba(236,182,19,0.2)] hover:shadow-[0_0_25px_rgba(236,182,19,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[0_0_15px_rgba(236,182,19,0.2)]"
+                    aria-label="Submit your wish and continue"
+                    title="Submit wish (or wait for timer to finish)">
+                    <span class="material-symbols-outlined text-[20px] font-bold">check</span>
+                    <span class="text-sm font-bold tracking-wide">Done</span>
+                </button>
+            </div>
         </div>
     </main>
 </body>

@@ -60,6 +60,17 @@
             Your words live on.
         </h1>
         <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
+        
+        <!-- Saved Wish Display -->
+        <div id="wishDisplay" class="hidden w-full mb-8 p-6 bg-surface-dark/40 rounded-2xl border border-primary/10 text-center">
+            <p id="wishText" class="text-white/80 italic mb-4 leading-relaxed"></p>
+            <div class="flex items-center justify-center gap-4 text-[10px] uppercase tracking-widest text-primary/60">
+                <span id="wishDate"></span>
+                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span id="wishVisibility"></span>
+            </div>
+        </div>
+
         <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs">
             Thank you for sharing a wish for tomorrow. It has been saved.
         </p>
@@ -72,9 +83,9 @@
                 <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <span>View Wall</span>
             </a>
-            <a href="/src/pages/index.html" class="w-full flex items-center justify-center h-12 bg-transparent border border-neutral-300 dark:border-white/20 text-neutral-900 dark:text-white text-base font-semibold tracking-wide rounded-xl hover:bg-neutral-900/5 dark:hover:bg-white/5 transition-all duration-300">
+            <button onclick="clearSessionAndGoHome()" class="w-full flex items-center justify-center h-12 bg-transparent border border-neutral-300 dark:border-white/20 text-neutral-900 dark:text-white text-base font-semibold tracking-wide rounded-xl hover:bg-neutral-900/5 dark:hover:bg-white/5 transition-all duration-300">
                 <span>Back to Home</span>
-            </a>
+            </button>
         </div>
         <p class="mt-6 text-xs text-center text-neutral-400 dark:text-white/20">
             One Minute for Tomorrow
@@ -83,5 +94,21 @@
 </div>
 
 <script src="../../src/js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentWish = JSON.parse(sessionStorage.getItem('currentWish'));
+        if (currentWish) {
+            document.getElementById('wishDisplay').classList.remove('hidden');
+            document.getElementById('wishText').textContent = `"${currentWish.text}"`;
+            document.getElementById('wishDate').textContent = app.getTimeAgo(currentWish.createdAt);
+            document.getElementById('wishVisibility').textContent = currentWish.isPublic ? 'Public' : 'Private';
+        }
+    });
+
+    function clearSessionAndGoHome() {
+        sessionStorage.removeItem('currentWish');
+        goHome();
+    }
+</script>
 </body>
 </html>

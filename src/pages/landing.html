@@ -96,7 +96,12 @@
 </div>
 
 <script src="../../src/js/app.js"></script>
+<script src="../../src/js/fireworks.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fireworks.init({ randomChance: 0.1 });
+    });
+
     function startWriting() {
         goTo('writing');
     }

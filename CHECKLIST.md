@@ -67,33 +67,28 @@
 - [x] Error handling implemented
 - [x] Success confirmation
 
-### ⏳ Visibility Page (Ready for integration)
-- [ ] Fetch current wish from DB
-- [ ] Toggle isPublic status
-- [ ] Save update to database
-- [ ] Show confirmation
-- Integration example in: API_INTEGRATION_EXAMPLES.md
+### ✅ Visibility Page (Integrated)
+- [x] Fetch current wish from DB
+- [x] Toggle isPublic status
+- [x] Save update to database
+- [x] Show confirmation
 
-### ⏳ Wall Page (Ready for integration)
-- [ ] Fetch all public wishes
-- [ ] Display in grid/list
-- [ ] Show metadata
-- [ ] Implement pagination
-- Integration example in: API_INTEGRATION_EXAMPLES.md
+### ✅ Wall Page (Integrated)
+- [x] Fetch all public wishes
+- [x] Display in grid/list
+- [x] Show metadata
+- [x] Implement pagination (via limit/skip in API)
 
-### ⏳ Index/Home Page (Ready for integration)
-- [ ] Show statistics
-- [ ] Display total wishes
-- [ ] Show public/private ratio
-- [ ] Real-time updates
-- Integration example in: API_INTEGRATION_EXAMPLES.md
+### ✅ Index/Home Page (Integrated)
+- [x] Show statistics
+- [x] Display total wishes
+- [x] Show public/private ratio (total wishes shown)
 
-### ⏳ Confirmation Page (Ready for integration)
-- [ ] Display saved wish
-- [ ] Show visibility status
-- [ ] Display creation date
-- [ ] Provide action buttons
-- Integration example in: API_INTEGRATION_EXAMPLES.md
+### ✅ Confirmation Page (Integrated)
+- [x] Display saved wish
+- [x] Show visibility status
+- [x] Display creation date
+- [x] Provide action buttons
 
 ---
 

@@ -44,8 +44,36 @@
             background: white;
             border-radius: 50%;
         }
-    </style>
-    <style>
+
+        /* Firework Animations */
+        @keyframes firework-burst {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .firework-particle {
+            position: fixed !important;
+            pointer-events: none !important;
+            width: 6px !important;
+            height: 6px !important;
+            border-radius: 50% !important;
+            z-index: 9999 !important;
+        }
+
+        .firework-burst {
+            position: fixed !important;
+            width: 20px !important;
+            height: 20px !important;
+            pointer-events: none !important;
+            z-index: 9998 !important;
+        }
+
         body {
           min-height: max(884px, 100dvh);
         }
@@ -85,9 +113,15 @@
         <!-- Decorative Divider -->
         <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
         <!-- Subtext -->
-        <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs">
+        <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs mb-6">
             Choose an option to begin your journey
         </p>
+
+        <!-- Stats display -->
+        <div id="statsDisplay" class="hidden flex flex-col items-center gap-1 py-4 px-6 bg-surface-dark/30 rounded-2xl border border-primary/5">
+            <span id="totalWishes" class="text-primary text-2xl font-bold">0</span>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-white/30 font-medium">Wishes Shared</span>
+        </div>
     </div>
     
     <!-- Bottom Action Area -->
@@ -110,6 +144,30 @@
     </div>
 </div>
 
+<script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
+<script src="../../src/js/fireworks.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize fireworks
+        fireworks.init({ randomChance: 0.15 });
+
+        // Load stats
+        try {
+            const response = await wishAPI.getStats();
+            if (response.success && response.data.total > 0) {
+                document.getElementById('statsDisplay').classList.remove('hidden');
+                document.getElementById('totalWishes').textContent = response.data.total;
+                
+                // If there are many wishes, celebrate!
+                if (response.data.total % 10 === 0) {
+                    fireworks.celebrateSequence(5, 400);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        }
+    });
+</script>
 </body>
 </html>

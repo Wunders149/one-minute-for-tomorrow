@@ -98,14 +98,30 @@
     </div>
 </div>
 
+<script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
 <script>
-    function chooseVisibility(isPublic) {
+    async function chooseVisibility(isPublic) {
         const currentWish = JSON.parse(sessionStorage.getItem('currentWish'));
-        currentWish.isPublic = isPublic;
-        app.addWish(currentWish);
-        sessionStorage.removeItem('currentWish');
-        goTo('confirmation');
+        if (!currentWish || !currentWish.id) {
+            console.error('No current wish found in session');
+            goHome();
+            return;
+        }
+
+        try {
+            const response = await wishAPI.updateWish(currentWish.id, currentWish.text, isPublic);
+            if (response.success) {
+                currentWish.isPublic = isPublic;
+                sessionStorage.setItem('currentWish', JSON.stringify(currentWish));
+                goTo('confirmation');
+            } else {
+                throw new Error(response.message || 'Failed to update wish visibility');
+            }
+        } catch (error) {
+            console.error('Error updating visibility:', error);
+            alert('There was an error saving your choice. Please try again.');
+        }
     }
 </script>
 </body>
