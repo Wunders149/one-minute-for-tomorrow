@@ -3,8 +3,11 @@
  * Manages continuous music playback across multiple pages using localStorage
  */
 class AudioController {
-    constructor(src) {
+    constructor(src, title, artist) {
         this.src = src;
+        this.title = title || 'Unknown Title';
+        this.artist = artist || 'Unknown Artist';
+        
         this.audio = new Audio(this.src);
         this.audio.loop = true;
         this.audio.volume = 0.4;
@@ -16,75 +19,103 @@ class AudioController {
     }
 
     init() {
-        // Load saved state
         const savedTime = localStorage.getItem(this.storageKeyTime);
-        if (savedTime) {
-            this.audio.currentTime = parseFloat(savedTime);
-        }
+        if (savedTime) this.audio.currentTime = parseFloat(savedTime);
 
         const isPlaying = localStorage.getItem(this.storageKeyPlaying) === 'true';
-        if (isPlaying) {
-            // Browsers usually block autoplay until user interaction
-            this.attemptPlay();
-        }
-
-        // Periodically save time
+        
         setInterval(() => {
             if (!this.audio.paused) {
                 localStorage.setItem(this.storageKeyTime, this.audio.currentTime);
             }
         }, 1000);
 
-        // Listen for user interaction to resume if blocked
         const resumeAudio = () => {
             if (localStorage.getItem(this.storageKeyPlaying) === 'true' && this.audio.paused) {
-                this.attemptPlay();
+                this.play();
             }
         };
 
         document.addEventListener('click', resumeAudio, { once: true });
-        document.addEventListener('mousedown', resumeAudio, { once: true });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'm' && !e.target.tagName.match(/TEXTAREA|INPUT/)) {
+                this.toggle();
+            }
+        });
+
+        // Auto-inject UI if not present
+        window.addEventListener('DOMContentLoaded', () => {
+            this.renderUI();
+            if (isPlaying) this.play();
+        });
     }
 
-    attemptPlay() {
+    renderUI() {
+        // Find or create container
+        let container = document.getElementById('music-control-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'music-control-container';
+            container.className = 'fixed top-4 right-6 z-[100]';
+            document.body.appendChild(container);
+        }
+
+        container.innerHTML = `
+            <div id="musicCapsule" class="music-capsule" onclick="bgMusic.toggle()">
+                <div class="visualizer">
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                    <div class="vis-bar"></div>
+                </div>
+                <div class="music-info">
+                    <span class="music-title">${this.title}</span>
+                    <span class="music-artist">${this.artist}</span>
+                </div>
+                <span id="musicIcon" class="material-symbols-outlined text-[20px] ml-auto text-primary">
+                    ${this.audio.paused ? 'volume_off' : 'volume_up'}
+                </span>
+            </div>
+        `;
+        this.updateUI();
+    }
+
+    play() {
         this.audio.play().then(() => {
             localStorage.setItem(this.storageKeyPlaying, 'true');
-            this.updateIcons();
-        }).catch(err => {
-            console.log('Autoplay prevented. Waiting for user interaction.');
-            this.updateIcons();
-        });
+            this.updateUI();
+        }).catch(() => this.updateUI());
+    }
+
+    pause() {
+        this.audio.pause();
+        localStorage.setItem(this.storageKeyPlaying, 'false');
+        this.updateUI();
     }
 
     toggle() {
-        if (this.audio.paused) {
-            this.audio.play();
-            localStorage.setItem(this.storageKeyPlaying, 'true');
-        } else {
-            this.audio.pause();
-            localStorage.setItem(this.storageKeyPlaying, 'false');
-        }
-        this.updateIcons();
+        if (this.audio.paused) this.play();
+        else this.pause();
     }
 
-    updateIcons() {
-        const icons = document.querySelectorAll('.music-toggle-icon');
-        const buttons = document.querySelectorAll('.music-toggle-btn');
-        const isPaused = this.audio.paused;
+    updateUI() {
+        const capsule = document.getElementById('musicCapsule');
+        const icon = document.getElementById('musicIcon');
+        if (!capsule || !icon) return;
 
-        icons.forEach(icon => {
-            icon.textContent = isPaused ? 'volume_off' : 'volume_up';
-        });
-
-        buttons.forEach(btn => {
-            if (isPaused) {
-                btn.classList.add('opacity-50');
-            } else {
-                btn.classList.remove('opacity-50');
-            }
-        });
+        if (this.audio.paused) {
+            capsule.classList.remove('is-playing');
+            icon.textContent = 'volume_off';
+        } else {
+            capsule.classList.add('is-playing');
+            icon.textContent = 'volume_up';
+        }
     }
 }
 
 // Initialize with the user's specific track
-const bgMusic = new AudioController('/src/assets/audio/Calum Scott - You Are The Reason (Official Video).mp3');
+const bgMusic = new AudioController(
+    '/src/assets/audio/Calum Scott - You Are The Reason (Official Video).mp3',
+    'You Are The Reason',
+    'Calum Scott'
+);
