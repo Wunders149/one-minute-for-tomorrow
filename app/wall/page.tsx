@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import FadeIn from '@/components/FadeIn';
 import Link from 'next/link';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Message {
@@ -12,6 +11,22 @@ interface Message {
   createdAt: string;
   timezone?: string;
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+};
 
 export default function WallPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,64 +53,85 @@ export default function WallPage() {
 
   return (
     <div className="flex-1 flex flex-col p-6 md:p-12 relative min-h-screen">
+      
       {/* Header */}
-      <header className="flex justify-between items-start mb-16 md:mb-24 relative z-10">
+      <motion.header 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
+        className="flex justify-between items-start mb-20 md:mb-32 relative z-10"
+      >
         <Link 
           href="/"
-          className="group flex items-center gap-2 text-white/30 hover:text-gold-100 transition-colors duration-300"
+          className="group flex items-center gap-3 text-white/30 hover:text-gold-100 transition-colors duration-500"
         >
           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-          <span className="text-xs uppercase tracking-widest">Home</span>
+          <span className="text-[10px] uppercase tracking-[0.2em]">Home</span>
         </Link>
 
         <div className="text-right">
-          <h1 className="font-serif text-2xl md:text-4xl text-white/90 mb-2">
+          <h1 className="font-serif text-3xl md:text-5xl text-white/90 mb-3 tracking-tight">
             Wall of Tomorrow
           </h1>
-          <div className="flex items-center justify-end gap-2 text-white/30 text-xs tracking-wider">
+          <div className="flex items-center justify-end gap-3 text-white/30 text-[10px] tracking-[0.2em] uppercase">
             <span>Voices from the void</span>
             <button onClick={fetchMessages} className="hover:text-white transition-colors p-1">
                <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Grid */}
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8 pb-20 max-w-7xl mx-auto w-full">
-        {messages.map((msg, index) => (
-          <FadeIn key={msg._id} delay={index * 0.05} className="break-inside-avoid mb-8">
-            <motion.div 
-              whileHover={{ scale: 1.02 }}
-              className="relative bg-white/[0.02] border border-white/[0.05] p-8 rounded-sm hover:bg-white/[0.04] hover:border-gold-400/20 transition-all duration-700 group"
-            >
-              {/* Decorative Corner */}
-              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/10 group-hover:border-gold-400/50 transition-colors duration-700" />
-              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/10 group-hover:border-gold-400/50 transition-colors duration-700" />
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="columns-1 md:columns-2 lg:columns-3 gap-12 space-y-12 pb-32 max-w-8xl mx-auto w-full"
+      >
+        {messages.map((msg) => (
+          <motion.div 
+            key={msg._id} 
+            variants={itemVariants}
+            className="break-inside-avoid relative group"
+          >
+            <div className="relative p-8 md:p-10 transition-all duration-1000 group-hover:bg-white/[0.02] rounded-sm border-l border-white/5 hover:border-gold-400/30">
+              
+              {/* Subtle Quotes */}
+              <span className="absolute top-6 left-4 text-4xl font-serif text-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700">“</span>
 
-              <p className="font-serif text-lg md:text-xl leading-relaxed text-white/80 mb-6 whitespace-pre-wrap">
+              <p className="font-serif text-xl md:text-2xl leading-[1.6] text-white/70 group-hover:text-white/90 transition-colors duration-700 whitespace-pre-wrap">
                 {msg.content}
               </p>
               
-              <div className="flex items-center gap-3">
-                <div className="h-[1px] w-8 bg-white/10 group-hover:bg-gold-400/30 transition-colors" />
-                <span className="text-[10px] uppercase tracking-widest text-white/20 group-hover:text-white/40 transition-colors">
-                  {msg.timezone ? msg.timezone.split('/')[1]?.replace('_', ' ') : 'Anonymous'}
+              <div className="mt-8 flex items-center justify-between border-t border-white/5 pt-4 group-hover:border-white/10 transition-colors duration-700">
+                <div className="flex items-center gap-2">
+                   <Star className="w-2 h-2 text-gold-400 opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
+                   <span className="text-[9px] uppercase tracking-[0.2em] text-white/20 group-hover:text-gold-100/50 transition-colors">
+                     {msg.timezone ? msg.timezone.split('/')[1]?.replace('_', ' ') : 'Unknown'}
+                   </span>
+                </div>
+                <span className="text-[9px] uppercase tracking-[0.2em] text-white/10 group-hover:text-white/30 transition-colors">
+                   {new Date(msg.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </span>
               </div>
-            </motion.div>
-          </FadeIn>
+            </div>
+          </motion.div>
         ))}
         
         {!loading && messages.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-center opacity-50">
-            <p className="font-serif text-2xl text-white/40 italic">The silence is loud.</p>
-            <Link href="/write" className="mt-4 text-gold-400 underline underline-offset-4 text-sm">
-              Break it.
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            className="col-span-full flex flex-col items-center justify-center py-32 text-center opacity-50"
+          >
+            <p className="font-serif text-3xl text-white/40 italic mb-4">The silence is loud.</p>
+            <Link href="/write" className="text-gold-400/60 hover:text-gold-400 text-xs tracking-[0.2em] uppercase transition-colors">
+              Be the first to break it
             </Link>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

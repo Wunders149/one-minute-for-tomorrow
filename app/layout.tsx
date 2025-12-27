@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import BackgroundEffects from "@/components/BackgroundEffects";
+import CanvasBackground from "@/components/CanvasBackground";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfair.variable} antialiased`}>
         <ThemeWrapper>
           <BackgroundEffects />
+          <CanvasBackground />
           <div className="relative z-10 min-h-screen flex flex-col">
             {children}
           </div>
