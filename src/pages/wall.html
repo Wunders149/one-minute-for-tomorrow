@@ -48,7 +48,12 @@
 <div class="relative flex min-h-screen w-full flex-col">
     <!-- TopAppBar -->
     <header class="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md transition-colors border-b border-gray-200 dark:border-white/5">
-        <h2 class="text-xl font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white">Wall of Tomorrow</h2>
+        <div class="flex items-center gap-3">
+            <h2 class="text-xl font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white">Wall of Tomorrow</h2>
+            <button onclick="bgMusic.toggle()" class="music-toggle-btn flex items-center justify-center w-8 h-8 rounded-full hover:bg-primary/10 transition-all text-primary" title="Toggle Music">
+                <span class="music-toggle-icon material-symbols-outlined text-[20px]">volume_up</span>
+            </button>
+        </div>
         <a href="/src/pages/index.html" class="group flex items-center justify-center rounded-full w-10 h-10 bg-transparent hover:bg-primary/10 transition-all duration-300 active:scale-95">
             <span class="material-symbols-outlined text-gray-900 dark:text-white group-hover:text-primary transition-colors">arrow_back</span>
         </a>
@@ -95,11 +100,20 @@
 <script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
 <script src="../../src/js/fireworks.js"></script>
+<script src="../../src/js/audio-controller.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fireworks.init({ randomChance: 0.1 });
+        fireworks.init({ autoRain: true });
         loadPublicWishes();
     });
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
 
     async function loadPublicWishes() {
         const grid = document.getElementById('wishsGrid');
@@ -109,7 +123,14 @@
             const response = await wishAPI.getWishes(true);
             if (!response.success) throw new Error(response.message);
             
-            const publicWishes = response.data;
+            let publicWishes = response.data;
+            
+            // Check if it's 2026 or later to randomize
+            const now = new Date();
+            if (now.getFullYear() >= 2026) {
+                publicWishes = shuffleArray(publicWishes);
+            }
+
             grid.innerHTML = '';
 
             if (publicWishes.length === 0) {

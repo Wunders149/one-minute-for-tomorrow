@@ -45,35 +45,6 @@
             border-radius: 50%;
         }
 
-        /* Firework Animations */
-        @keyframes firework-burst {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(0);
-                opacity: 0;
-            }
-        }
-
-        .firework-particle {
-            position: fixed !important;
-            pointer-events: none !important;
-            width: 6px !important;
-            height: 6px !important;
-            border-radius: 50% !important;
-            z-index: 9999 !important;
-        }
-
-        .firework-burst {
-            position: fixed !important;
-            width: 20px !important;
-            height: 20px !important;
-            pointer-events: none !important;
-            z-index: 9998 !important;
-        }
-
         body {
           min-height: max(884px, 100dvh);
         }
@@ -96,24 +67,52 @@
     </div>
     
     <!-- Top Status Bar Area (Empty/Space) -->
-    <div class="z-10 w-full h-12"></div>
+    <div class="z-20 w-full h-12 flex items-center justify-end px-6">
+        <button onclick="bgMusic.toggle()" class="music-toggle-btn flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all text-primary" title="Toggle Music">
+            <span class="music-toggle-icon material-symbols-outlined text-[24px]">volume_up</span>
+        </button>
+    </div>
     
     <!-- Main Content Area -->
     <div class="z-10 flex flex-1 flex-col items-center justify-center px-8 w-full max-w-md mx-auto">
         <!-- Icon/Logo Mark -->
-        <div class="mb-10 opacity-80">
+        <div class="mb-6 opacity-80">
             <span class="material-symbols-outlined text-primary text-5xl font-light">
                 hourglass_top
             </span>
         </div>
+
+        <!-- 2026 Countdown -->
+        <div id="countdown" class="mb-8 flex flex-col items-center">
+            <div class="flex gap-4 text-center">
+                <div class="flex flex-col min-w-[60px]">
+                    <span id="days" class="text-4xl font-light text-primary tabular-nums">00</span>
+                    <span class="text-[9px] uppercase tracking-widest text-white/30">Days</span>
+                </div>
+                <div class="flex flex-col min-w-[60px]">
+                    <span id="hours" class="text-4xl font-light text-primary tabular-nums">00</span>
+                    <span class="text-[9px] uppercase tracking-widest text-white/30">Hours</span>
+                </div>
+                <div class="flex flex-col min-w-[60px]">
+                    <span id="minutes" class="text-4xl font-light text-primary tabular-nums">00</span>
+                    <span class="text-[9px] uppercase tracking-widest text-white/30">Mins</span>
+                </div>
+                <div class="flex flex-col min-w-[60px]">
+                    <span id="seconds" class="text-4xl font-light text-primary tabular-nums">00</span>
+                    <span class="text-[9px] uppercase tracking-widest text-white/30">Secs</span>
+                </div>
+            </div>
+            <p id="countdownLabel" class="mt-4 text-[10px] uppercase tracking-[0.4em] text-primary/50 font-medium">Until 2026</p>
+        </div>
+
         <!-- Headline -->
-        <h1 class="text-neutral-900 dark:text-white text-4xl md:text-5xl font-light leading-tight tracking-tight text-center">
+        <h1 id="mainHeadline" class="text-neutral-900 dark:text-white text-4xl md:text-5xl font-light leading-tight tracking-tight text-center">
             One Minute for Tomorrow
         </h1>
         <!-- Decorative Divider -->
         <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
         <!-- Subtext -->
-        <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs mb-6">
+        <p id="mainSubtext" class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs mb-6">
             Choose an option to begin your journey
         </p>
 
@@ -127,7 +126,7 @@
     <!-- Bottom Action Area -->
     <div class="z-10 w-full px-6 pb-10 md:pb-12 max-w-md mx-auto">
         <div class="flex flex-col gap-4">
-            <a href="/src/pages/landing.html" class="relative group w-full flex items-center justify-center h-14 bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98]">
+            <a href="/src/pages/landing.html" id="startWritingBtn" class="relative group w-full flex items-center justify-center h-14 bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98]">
                 <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <span>Start Writing</span>
             </a>
@@ -147,10 +146,52 @@
 <script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
 <script src="../../src/js/fireworks.js"></script>
+<script src="../../src/js/audio-controller.js"></script>
 <script>
+    const targetDate = new Date('2026-01-01T00:00:00').getTime();
+
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+        
+        if (distance < 0) {
+            document.getElementById('days').textContent = "00";
+            document.getElementById('hours').textContent = "00";
+            document.getElementById('minutes').textContent = "00";
+            document.getElementById('seconds').textContent = "00";
+            document.getElementById('countdownLabel').textContent = "Welcome to 2026";
+            
+            const btn = document.getElementById('startWritingBtn');
+            if (btn) btn.classList.add('hidden');
+            
+            document.getElementById('mainHeadline').textContent = "The future is here.";
+            document.getElementById('mainSubtext').textContent = "Explore the wishes that were left for this moment.";
+            
+            return true;
+        }
+        
+        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = d.toString().padStart(2, '0');
+        document.getElementById('hours').textContent = h.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = m.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = s.toString().padStart(2, '0');
+        
+        return false;
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
-        // Initialize fireworks
-        fireworks.init({ randomChance: 0.15 });
+        // Initialize fireworks rain
+        fireworks.init({ autoRain: true });
+
+        // Countdown
+        const isPast = updateCountdown();
+        if (!isPast) {
+            setInterval(updateCountdown, 1000);
+        }
 
         // Load stats
         try {

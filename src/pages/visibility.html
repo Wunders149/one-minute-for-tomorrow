@@ -45,10 +45,13 @@
     </div>
     
     <!-- Top Bar -->
-    <div class="z-10 w-full h-12 flex items-center px-6">
+    <div class="z-10 w-full h-12 flex items-center justify-between px-6">
         <a href="/src/pages/index.html" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300">
             <span class="material-symbols-outlined text-neutral-900 dark:text-white hover:text-primary">arrow_back</span>
         </a>
+        <button onclick="bgMusic.toggle()" class="music-toggle-btn flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all text-primary" title="Toggle Music">
+            <span class="music-toggle-icon material-symbols-outlined text-[24px]">volume_up</span>
+        </button>
     </div>
     
     <!-- Main Content -->
@@ -101,9 +104,10 @@
 <script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
 <script src="../../src/js/fireworks.js"></script>
+<script src="../../src/js/audio-controller.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        fireworks.init({ randomChance: 0.05 });
+        fireworks.init({ autoRain: true });
     });
 
     async function chooseVisibility(isPublic) {

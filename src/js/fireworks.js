@@ -18,7 +18,12 @@ class FireworkSystem {
         const color = this.colors[Math.floor(Math.random() * this.colors.length)];
         const tx = endX - startX;
         const ty = endY - startY;
-        const duration = 0.5 + Math.random() * 0.5;
+        
+        // Calculate distance for consistent velocity
+        const distance = Math.sqrt(tx * tx + ty * ty);
+        const velocity = 2.0; // Increased velocity (px per ms)
+        const duration = Math.max(0.2, Math.min(0.8, distance / (velocity * 1000)));
+        
         const angle = Math.atan2(tx, -ty);
 
         rocket.style.left = startX + 'px';
@@ -28,7 +33,7 @@ class FireworkSystem {
         rocket.style.setProperty('--tx', tx + 'px');
         rocket.style.setProperty('--ty', ty + 'px');
         rocket.style.setProperty('--rotate', angle + 'rad');
-        rocket.style.animation = `rocket-launch ${duration}s ease-in forwards`;
+        rocket.style.animation = `rocket-launch ${duration}s ease-out forwards`;
 
         this.container.appendChild(rocket);
 
@@ -42,7 +47,7 @@ class FireworkSystem {
      * Create a firework burst at specified coordinates
      */
     createFirework(x, y) {
-        const particleCount = 40 + Math.random() * 40;
+        const particleCount = 80 + Math.random() * 40;
         const colors = this.colors;
 
         for (let i = 0; i < particleCount; i++) {
@@ -51,18 +56,18 @@ class FireworkSystem {
             
             const color = colors[Math.floor(Math.random() * colors.length)];
             const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
-            const velocity = 200 + Math.random() * 300;
+            const velocity = 150 + Math.random() * 200;
             const tx = Math.cos(angle) * velocity;
             const ty = Math.sin(angle) * velocity;
-            const duration = 1.5 + Math.random() * 0.5;
+            const duration = 1.2 + Math.random() * 0.8;
 
             particle.style.left = x + 'px';
             particle.style.top = y + 'px';
             particle.style.backgroundColor = color;
+            particle.style.color = color;
             particle.style.setProperty('--tx', tx + 'px');
             particle.style.setProperty('--ty', ty + 'px');
-            particle.style.boxShadow = `0 0 6px ${color}`;
-            particle.style.animation = `firework-burst ${duration}s ease-out forwards`;
+            particle.style.animation = `firework-burst ${duration}s cubic-bezier(0.1, 0.5, 0.3, 1) forwards`;
 
             this.container.appendChild(particle);
             setTimeout(() => particle.remove(), duration * 1000);
@@ -75,48 +80,62 @@ class FireworkSystem {
         burst.className = 'firework-burst';
         burst.style.left = x + 'px';
         burst.style.top = y + 'px';
-        burst.style.backgroundColor = '#ecb613';
-        burst.style.borderRadius = '50%';
-        burst.style.boxShadow = `0 0 20px rgba(236, 182, 19, 0.8)`;
 
         this.container.appendChild(burst);
-        setTimeout(() => burst.remove(), 1200);
+        setTimeout(() => burst.remove(), 600);
     }
 
     createRandomFirework() {
         const endX = Math.random() * window.innerWidth;
-        const endY = Math.random() * (window.innerHeight * 0.4) + window.innerHeight * 0.1;
-        const startX = endX + (Math.random() - 0.5) * 100; // Slight angle
+        const endY = Math.random() * (window.innerHeight * 0.5) + window.innerHeight * 0.05;
+        const startX = endX + (Math.random() - 0.5) * 500; 
         const startY = window.innerHeight + 10;
         
         this.launch(startX, startY, endX, endY);
     }
 
-    celebrateSequence(count = 5, delay = 300) {
+    celebrateSequence(count = 5, delay = 150) {
         for (let i = 0; i < count; i++) {
             setTimeout(() => this.createRandomFirework(), delay * i);
         }
     }
 
     /**
+     * Start a continuous rain of fireworks
+     */
+    startRain() {
+        const rainInterval = setInterval(() => {
+            // Randomly trigger bursts or sequences
+            if (Math.random() < 0.4) {
+                this.celebrateSequence(Math.floor(Math.random() * 3) + 1, 100);
+            }
+        }, 1500);
+        return rainInterval;
+    }
+
+    /**
      * Initialize automatic triggers
      */
     init(options = {}) {
-        const { autoRandom = true, randomChance = 0.2, clickTrigger = true } = options;
+        const { autoRain = true, clickTrigger = true } = options;
 
-        if (autoRandom) {
-            setInterval(() => {
-                if (Math.random() < randomChance) this.createRandomFirework();
-            }, 8000);
+        if (autoRain) {
+            this.startRain();
         }
 
         if (clickTrigger) {
-            document.addEventListener('click', (e) => {
+            document.addEventListener('mousedown', (e) => {
                 const target = e.target.closest('button') || e.target.closest('a');
                 if (target) {
-                    const startX = window.innerWidth / 2;
-                    const startY = window.innerHeight + 10;
-                    this.launch(startX, startY, e.clientX, e.clientY);
+                    // Trigger a "mini-rain" on click
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            const offsetX = (Math.random() - 0.5) * 200;
+                            const offsetY = (Math.random() - 0.5) * 100;
+                            const originX = e.clientX + (Math.random() - 0.5) * 300;
+                            this.launch(originX, window.innerHeight + 10, e.clientX + offsetX, e.clientY + offsetY);
+                        }, i * 100);
+                    }
                 }
             });
         }
