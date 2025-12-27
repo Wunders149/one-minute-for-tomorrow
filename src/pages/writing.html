@@ -8,41 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="../../src/css/styles.css" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#ecb613",
-                        "background-light": "#f8f8f6",
-                        "background-dark": "#221d10",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    keyframes: {
-                        pulseSoft: {
-                            '0%, 100%': { opacity: '1' },
-                            '50%': { opacity: '0.7' },
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulseSoft 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    }
-                },
-            },
-        }
-    </script>
     <style>
         body {
             min-height: max(884px, 100dvh);
+        }
+        
+        :root {
+            --primary: #ecb613;
+            --background-dark: #221d10;
+        }
+        
+        .dark {
+            color-scheme: dark;
         }
     </style>
 </head>
@@ -87,44 +64,6 @@
             </button>
         </div>
     </div>
-    
-    <!-- iOS Keyboard Simulation -->
-    <div class="relative z-20 w-full bg-black">
-        <div class="w-full h-[290px] bg-[#1c1c1e] flex flex-col justify-start pt-2 pb-8 px-1" data-alt="Simulated Dark iOS Keyboard Layout">
-            <!-- Keyboard Row 1 -->
-            <div class="flex justify-center gap-[6px] mb-3 px-1">
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-            </div>
-            <!-- Keyboard Row 2 -->
-            <div class="flex justify-center gap-[6px] mb-3 px-1">
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-            </div>
-            <!-- Keyboard Row 3 -->
-            <div class="flex justify-center gap-[6px] px-1">
-                <div class="h-[42px] flex-1 max-w-[42px] rounded-[5px] bg-[#2e2e2f] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[32px] rounded-[5px] bg-[#4a4a4c] shadow-sm"></div>
-                <div class="h-[42px] flex-1 max-w-[48px] rounded-[5px] bg-[#2e2e2f] shadow-sm"></div>
-            </div>
-        </div>
-    </div>
 </body>
 
 <script src="../../src/js/app.js"></script>
@@ -133,12 +72,10 @@
     const charCountElement = document.getElementById('charCount');
     const wishInput = document.getElementById('wishInput');
     let timeLeft = 60;
-    let timerInterval = null;
     let isTimerActive = false;
 
     // Auto-start timer when page loads
     document.addEventListener('DOMContentLoaded', function() {
-        // Focus on input and start timer automatically
         wishInput.focus();
         startTimer();
     });
@@ -148,13 +85,12 @@
         charCountElement.textContent = `${this.value.length}/200`;
     });
 
-    // Timer function
     function startTimer() {
         if (isTimerActive) return;
         isTimerActive = true;
         timeLeft = 60;
 
-        timerInterval = setInterval(() => {
+        const timerInterval = setInterval(() => {
             timeLeft--;
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
@@ -162,13 +98,13 @@
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
+                isTimerActive = false;
                 submitWish();
             }
         }, 1000);
     }
 
     function submitWish() {
-        clearInterval(timerInterval);
         const text = wishInput.value.trim();
         
         if (text.length === 0) {
@@ -180,7 +116,7 @@
             id: Date.now(),
             text: text,
             createdAt: new Date().toISOString(),
-            isPublic: null  // Will be set on next screen
+            isPublic: null
         };
 
         sessionStorage.setItem('currentWish', JSON.stringify(wish));

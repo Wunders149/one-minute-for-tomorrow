@@ -31,11 +31,17 @@ class OneMinuteApp {
 
     // Wish Management
     addWish(wish) {
-        const newWish = {
+        // Handle both plain text and wish objects
+        const newWish = typeof wish === 'string' ? {
             id: Date.now(),
             text: wish,
-            isVisible: false,
+            isPublic: false,
             createdAt: new Date().toISOString()
+        } : {
+            ...wish,
+            id: wish.id || Date.now(),
+            createdAt: wish.createdAt || new Date().toISOString(),
+            isPublic: wish.isPublic !== undefined ? wish.isPublic : false
         };
         this.wishes.push(newWish);
         this.saveToStorage();
@@ -69,21 +75,31 @@ class OneMinuteApp {
         this.timer = duration;
         this.isRunning = true;
         
-        const interval = setInterval(() => {
+        // Clear any existing timer
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+        
+        this.timerInterval = setInterval(() => {
             this.timer--;
             if (onTick) onTick(this.timer);
             
             if (this.timer <= 0) {
-                clearInterval(interval);
+                clearInterval(this.timerInterval);
+                this.timerInterval = null;
                 this.isRunning = false;
                 if (onComplete) onComplete();
             }
         }, 1000);
 
-        return interval;
+        return this.timerInterval;
     }
 
     stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
         this.isRunning = false;
     }
 
