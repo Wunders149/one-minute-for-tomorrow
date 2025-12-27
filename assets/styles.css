@@ -1,0 +1,227 @@
+/* Firework Animations */
+@keyframes firework-burst {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), calc(var(--ty) + 80px)) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes rocket-launch {
+    0% {
+        transform: translate(0, 0) rotate(var(--rotate, 0rad)) scale(1.2);
+        opacity: 1;
+        filter: brightness(2) blur(1px);
+    }
+    10% {
+        filter: brightness(1.2) blur(0.5px);
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) rotate(var(--rotate, 0rad)) scale(0.2);
+        opacity: 0;
+    }
+}
+
+@keyframes firework-flash {
+    0% {
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 0;
+    }
+    5% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}
+
+.firework-particle {
+    position: fixed !important;
+    pointer-events: none !important;
+    width: 3px !important;
+    height: 3px !important;
+    border-radius: 50% !important;
+    z-index: 9999 !important;
+    box-shadow: 0 0 10px 1px currentColor;
+    will-change: transform, opacity;
+}
+
+.firework-rocket {
+    position: fixed !important;
+    pointer-events: none !important;
+    width: 2px !important;
+    height: 10px !important;
+    border-radius: 1px !important;
+    z-index: 9998 !important;
+    will-change: transform, opacity;
+}
+
+/* Rocket flame/trail */
+.firework-rocket::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 30px;
+    background: linear-gradient(to bottom, white, currentColor 20%, transparent 80%);
+    filter: blur(3px);
+    opacity: 0.9;
+    border-radius: 50%;
+}
+
+.firework-burst {
+    position: fixed !important;
+    width: 60px !important;
+    height: 60px !important;
+    pointer-events: none !important;
+    z-index: 9997 !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0.5) 20%, transparent 70%) !important;
+    animation: firework-flash 0.5s cubic-bezier(0.1, 0, 0, 1) forwards !important;
+}
+
+/* Music Capsule Styles */
+.music-capsule {
+    display: flex;
+    items-center: center;
+    gap: 12px;
+    padding: 6px 12px;
+    background: rgba(44, 38, 22, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(236, 182, 19, 0.2);
+    border-radius: 9999px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 44px;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.music-capsule:hover, .music-capsule.is-playing {
+    max-width: 240px;
+    background: rgba(44, 38, 22, 0.8);
+    border-color: rgba(236, 182, 19, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.music-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.music-capsule:hover .music-info, .music-capsule.is-playing .music-info {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.music-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.music-artist {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Visualizer Animation */
+.visualizer {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+    width: 16px;
+}
+
+.vis-bar {
+    width: 2px;
+    background: var(--primary);
+    border-radius: 1px;
+    height: 3px;
+}
+
+.is-playing .vis-bar {
+    animation: visualize 0.8s ease-in-out infinite;
+}
+
+.is-playing .vis-bar:nth-child(2) { animation-delay: 0.2s; }
+.is-playing .vis-bar:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes visualize {
+    0%, 100% { height: 3px; }
+    50% { height: 14px; }
+}
+
+/* Base Styles */
+:root {
+    --primary: #ecb613;
+    --background-light: #f8f8f6;
+    --background-dark: #221d10;
+    --surface-dark: #2c2616;
+    --surface-light: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html.dark {
+    color-scheme: dark;
+}
+
+/* Scrollbar Styling */
+textarea::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+textarea,
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Staggered Animation Delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+
+/* Custom scrollbar for main content */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(236, 182, 19, 0.3);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(236, 182, 19, 0.5);
+}

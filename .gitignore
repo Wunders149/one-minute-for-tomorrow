@@ -1,13 +1,58 @@
+# Dependencies
 node_modules/
+package-lock.json
+npm-debug.log
+yarn-error.log
+
+# Environment variables
 .env
-.DS_Store
+.env.local
+.env.*.local
+
+# Logs
 *.log
-dist/
-build/
-.vscode/
-.idea/
+logs/
+server.log
+server-err.log
+
+# OS files
+.DS_Store
+Thumbs.db
 *.swp
 *.swo
 *~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build & Dist
+dist/
+build/
+out/
+
+# Cache
 .cache/
+.npm/
+
+# Testing
 coverage/
+.nyc_output/
+
+# Backups
+*.backup
+*.bak
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# PM2
+ecosystem-error.log
+
+# Database
+*.db

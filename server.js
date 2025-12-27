@@ -9,16 +9,26 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
 const MONGODB_URI = process.env.MONGODB_URI;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors({
+  origin: NODE_ENV === 'production' 
+    ? process.env.ALLOWED_ORIGINS?.split(',') || 'localhost'
+    : '*',
+  credentials: true
+}));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-// Static files
-app.use(express.static(__dirname));
-app.use('/src', express.static(path.join(__dirname, 'src')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+// Static files with cache headers
+const staticOptions = NODE_ENV === 'production' 
+  ? { maxAge: '7d', etag: false }
+  : { maxAge: 0 };
+
+app.use(express.static(__dirname, staticOptions));
+app.use('/src', express.static(path.join(__dirname, 'src'), staticOptions));
+app.use('/assets', express.static(path.join(__dirname, 'assets'), staticOptions));
 
 // MongoDB Connection
 mongoose.connect(MONGODB_URI, {
