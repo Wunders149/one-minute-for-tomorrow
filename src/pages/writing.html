@@ -333,6 +333,7 @@
     </main>
 </body>
 
+<script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
 <script>
     const timerElement = document.getElementById('timer');
@@ -412,34 +413,39 @@
             return;
         }
 
-        // Create wish object with proper metadata
-        const wish = {
-            id: Date.now(),
-            text: text,
-            createdAt: new Date().toISOString(),
-            isPublic: null  // Will be determined on next screen
-        };
-
-        try {
-            // Store the current wish in sessionStorage
-            sessionStorage.setItem('currentWish', JSON.stringify(wish));
-
-            // Disable button to prevent double submission
-            if (submitBtn) {
-                submitBtn.disabled = true;
-            }
-
-            // Navigate to visibility screen after a brief delay
-            setTimeout(() => {
-                goTo('visibility');
-            }, 300);
-        } catch (error) {
-            console.error('Error saving wish:', error);
-            alert('There was an error saving your wish. Please try again.');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-            }
+        // Disable button to prevent double submission
+        if (submitBtn) {
+            submitBtn.disabled = true;
         }
+
+        // Save to backend via API
+        wishAPI.createWish(text, false)
+            .then(response => {
+                if (response.success) {
+                    // Store the wish ID in sessionStorage for next page
+                    const wish = {
+                        id: response.data._id,
+                        text: response.data.text,
+                        createdAt: response.data.createdAt,
+                        isPublic: response.data.isPublic
+                    };
+                    sessionStorage.setItem('currentWish', JSON.stringify(wish));
+
+                    // Navigate to visibility screen after a brief delay
+                    setTimeout(() => {
+                        goTo('visibility');
+                    }, 300);
+                } else {
+                    throw new Error(response.message || 'Failed to save wish');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving wish:', error);
+                alert('There was an error saving your wish. Please try again.');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                }
+            });
     }
 
     // Prevent accidental navigation if user has unsaved content

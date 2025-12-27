@@ -1,66 +1,83 @@
-const http = require('http');
-const fs = require('fs');
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const path = require('path');
 
-const PORT = 3000;
-const HOST = 'localhost';
+const app = express();
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
+const MONGODB_URI = process.env.MONGODB_URI;
 
-const MIME_TYPES = {
-  '.html': 'text/html',
-  '.css': 'text/css',
-  '.js': 'text/javascript',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpg',
-  '.jpeg': 'image/jpeg',
-  '.gif': 'image/gif',
-  '.svg': 'image/svg+xml',
-  '.wav': 'audio/wav',
-  '.mp4': 'video/mp4',
-  '.woff': 'application/font-woff',
-  '.ttf': 'application/font-ttf',
-  '.eot': 'application/vnd.ms-fontobject',
-  '.otf': 'application/font-otf',
-  '.wasm': 'application/wasm'
-};
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const server = http.createServer((req, res) => {
-  console.log(`Request: ${req.method} ${req.url}`);
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/src', express.static(path.join(__dirname, 'src')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-  // Handle the root path - serve from src/pages/
-  let filePath = req.url === '/' ? '/src/pages/index.html' : req.url;
+// MongoDB Connection
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('✓ Connected to MongoDB');
+})
+.catch(err => {
+  console.error('✗ MongoDB connection error:', err);
+  process.exit(1);
+});
 
-  // Resolve the file path
-  filePath = path.join(process.cwd(), filePath);
+// API Routes
+const apiRoutes = require('./config/api-routes');
+app.use('/api', apiRoutes);
 
-  // Get the file extension
-  const extname = path.extname(filePath).toLowerCase();
-  const contentType = MIME_TYPES[extname] || 'application/octet-stream';
-
-  // Read the file
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        // File not found
-        console.error(`File not found: ${filePath}`);
-        res.writeHead(404);
-        res.end('404 Not Found');
-      } else {
-        // Server error
-        console.error(`Server error: ${err.code}`);
-        res.writeHead(500);
-        res.end('500 Internal Server Error');
-      }
-    } else {
-      // Success
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content, 'utf-8');
-    }
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Server is running',
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`Server running at http://${HOST}:${PORT}/`);
-  console.log(`Serving files from: ${process.cwd()}`);
-  console.log('Press Ctrl+C to stop the server');
+// Root route - serve landing page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src/pages/index.html'));
+});
+
+// Catch-all route for SPA - serve index.html for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src/pages/index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    success: false,
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// Start server
+app.listen(PORT, HOST, () => {
+  console.log(`\n${'='.repeat(60)}`);
+  console.log(`Server running at http://${HOST}:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Database: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
+  console.log(`${'='.repeat(60)}\n`);
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\nShutting down gracefully...');
+  await mongoose.connection.close();
+  process.exit(0);
 });
