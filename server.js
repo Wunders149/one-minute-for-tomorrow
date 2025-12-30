@@ -31,6 +31,12 @@ app.use('/src', express.static(path.join(__dirname, 'src'), staticOptions));
 app.use('/assets', express.static(path.join(__dirname, 'assets'), staticOptions));
 
 // MongoDB Connection
+if (!MONGODB_URI) {
+  console.error('✗ Error: MONGODB_URI environment variable is not defined.');
+  console.error('  Please create a .env file with your MongoDB connection string.');
+  process.exit(1);
+}
+
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -84,18 +90,25 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, HOST, () => {
-  console.log(`\n${'='.repeat(60)}`);
-  console.log(`Server running at http://${HOST}:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Database: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
-  console.log(`${'='.repeat(60)}\n`);
-});
+// Start server if run directly
+if (require.main === module) {
+  app.listen(PORT, HOST, () => {
+    console.log(`\n${'='.repeat(60)}`);
+    console.log(`Server running at http://${HOST}:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Database: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
+    console.log(`${'='.repeat(60)}\n`);
+  });
+}
+
+// Export for serverless
+module.exports = app;
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\nShutting down gracefully...');
-  await mongoose.connection.close();
+  if (mongoose.connection.readyState === 1) {
+    await mongoose.connection.close();
+  }
   process.exit(0);
 });
