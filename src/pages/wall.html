@@ -47,52 +47,72 @@
         body {
             min-height: max(884px, 100dvh);
         }
+        
+        /* --- MOVIE CREDITS ANIMATION (Post-2026) --- */
+        .credits-mask {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+        }
+
+        .credits-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5rem;
+            padding-bottom: 50vh;
+            will-change: transform;
+        }
+
+        .credits-mask:hover .credits-content {
+            animation-play-state: paused;
+        }
+        
+        /* --- MINIMALIST GRID (Pre-2026) --- */
+        .minimal-card {
+            transition: all 0.3s ease;
+        }
+        .minimal-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.2);
+        }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden selection:bg-primary/30">
-<div class="relative flex min-h-screen w-full flex-col">
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased overflow-hidden selection:bg-primary/30">
+<div class="relative flex h-screen w-full flex-col">
     <!-- TopAppBar -->
-    <header class="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md transition-colors border-b border-gray-200 dark:border-white/5">
-        <div class="flex items-center gap-3">
-            <h2 class="text-xl font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white">Wall of Tomorrow</h2>
+    <header class="absolute top-0 z-50 flex items-center justify-between w-full px-5 py-4 bg-gradient-to-b from-background-dark/80 to-transparent pointer-events-none">
+        <div class="pointer-events-auto flex items-center gap-3">
+            <h2 class="text-xl font-bold leading-tight tracking-[-0.015em] text-white/50">Wall of Tomorrow</h2>
         </div>
-        <a href="/src/pages/index.html" class="group flex items-center justify-center rounded-full w-10 h-10 bg-transparent hover:bg-primary/10 transition-all duration-300 active:scale-95">
-            <span class="material-symbols-outlined text-gray-900 dark:text-white group-hover:text-primary transition-colors">arrow_back</span>
+        <a href="/src/pages/index.html" class="pointer-events-auto group flex items-center justify-center rounded-full w-10 h-10 bg-white/5 hover:bg-primary/10 transition-all duration-300 active:scale-95">
+            <span class="material-symbols-outlined text-white group-hover:text-primary transition-colors">arrow_back</span>
         </a>
     </header>
     
-    <!-- Main Scrollable Content -->
-    <main class="flex-1 flex flex-col px-4 pt-4 pb-24">
-        <!-- HeadlineText: System Prompt -->
-        <div class="flex flex-col items-center justify-center py-8 text-center animate-fade-in-up">
-            <span class="material-symbols-outlined text-primary mb-3 text-3xl opacity-80">nights_stay</span>
-            <h2 class="text-2xl md:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white px-4">
-                What is your wish<br/><span class="text-primary">for tomorrow?</span>
-            </h2>
-            <p class="mt-3 text-sm text-gray-500 dark:text-white/40 max-w-[300px]">
-                Shared wishes from people like you.
-            </p>
-        </div>
-        
-        <!-- TextGrid: 3 Column Layout -->
-        <div id="wishsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto w-full max-w-6xl">
-            <!-- Wishes will be loaded here -->
+    <!-- Main Content Container -->
+    <main id="mainContainer" class="flex-1 w-full h-full relative px-4 pt-20 pb-24 overflow-y-auto no-scrollbar">
+        <!-- Content injected by JS based on date -->
+        <div class="text-center w-full py-20">
+            <div class="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
     </main>
     
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 dark:border-white/5 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-xl px-6 pb-6 pt-3">
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-background-dark via-background-dark/90 to-transparent px-6 pb-6 pt-12">
         <div class="flex items-center justify-around max-w-md mx-auto gap-2">
-            <a href="/src/pages/index.html" class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group">
-                <span class="material-symbols-outlined text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors text-[26px]">home</span>
-                <span class="text-[10px] font-medium text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Home</span>
+            <a href="/src/pages/index.html" class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group opacity-50 hover:opacity-100 transition-opacity">
+                <span class="material-symbols-outlined text-white group-hover:text-primary transition-colors text-[26px]">home</span>
+                <span class="text-[10px] font-medium text-white group-hover:text-primary transition-colors">Home</span>
             </a>
-            <a href="/src/pages/index.html#landing" class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group">
-                <span class="material-symbols-outlined text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors text-[26px]">hourglass_empty</span>
-                <span class="text-[10px] font-medium text-gray-400 dark:text-white/40 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Write</span>
+            <a href="/src/pages/index.html#landing" class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group opacity-50 hover:opacity-100 transition-opacity">
+                <span class="material-symbols-outlined text-white group-hover:text-primary transition-colors text-[26px]">hourglass_empty</span>
+                <span class="text-[10px] font-medium text-white group-hover:text-primary transition-colors">Write</span>
             </a>
             <button class="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg py-2 group">
-                <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-[26px]" style="font-variation-settings: 'FILL' 1">grid_view</span>
+                <span class="material-symbols-outlined text-primary text-[26px]" style="font-variation-settings: 'FILL' 1">grid_view</span>
                 <span class="text-[10px] font-medium text-primary">Wall</span>
             </button>
         </div>
@@ -104,7 +124,7 @@
 <script src="../../src/js/fireworks.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fireworks.init({ autoRain: true });
+        fireworks.init({ autoRain: false }); // Minimalist: No rain unless special event
         loadPublicWishes();
     });
 
@@ -117,46 +137,157 @@
     }
 
     async function loadPublicWishes() {
-        const grid = document.getElementById('wishsGrid');
-        grid.innerHTML = '<div class="text-center col-span-full py-12"><div class="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>';
-
+        const container = document.getElementById('mainContainer');
+        
         try {
             const response = await wishAPI.getWishes(true);
             if (!response.success) throw new Error(response.message);
             
             let publicWishes = response.data;
-            
-            // Check if it's 2026 or later to randomize
             const now = new Date();
-            if (now.getFullYear() >= 2026) {
+            const isFuture = now.getFullYear() >= 2026;
+
+            container.innerHTML = '';
+
+            // --- MODE 1: FUTURE (Movie Credits) ---
+            if (isFuture) {
+                // Remove padding/overflow from main container for full-screen effect
+                container.classList.remove('px-4', 'pt-20', 'pb-24', 'overflow-y-auto');
+                container.classList.add('overflow-hidden');
+                
                 publicWishes = shuffleArray(publicWishes);
+                renderCreditsView(container, publicWishes);
+            } 
+            // --- MODE 2: PRESENT (Minimalist Grid) ---
+            else {
+                renderGridView(container, publicWishes);
             }
 
-            grid.innerHTML = '';
-
-            if (publicWishes.length === 0) {
-                grid.innerHTML = '<div class="text-center col-span-full py-12"><p class="text-white/40">No wishes shared yet. Be the first!</p></div>';
-                return;
-            }
-
-            publicWishes.forEach((wish, index) => {
-                const card = document.createElement('div');
-                card.className = 'bg-surface-dark dark:bg-surface-dark/50 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-all hover:shadow-[0_0_20px_rgba(236,182,19,0.05)] h-full flex flex-col justify-between animate-fade-in-up';
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.innerHTML = `
-                    <p class="text-white/90 text-lg italic leading-relaxed mb-4">"${wish.text}"</p>
-                    <div class="flex items-center gap-2">
-                        <span class="w-1 h-1 rounded-full bg-primary/40"></span>
-                        <p class="text-xs text-white/30 uppercase tracking-widest font-medium">${app.getTimeAgo(wish.createdAt)}</p>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
         } catch (error) {
             console.error('Error loading wishes:', error);
-            grid.innerHTML = '<div class="text-center col-span-full py-12"><p class="text-red-400">Failed to load the Wall of Tomorrow. Please try again later.</p></div>';
+            container.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-red-400">Failed to load wishes.</p></div>';
         }
     }
+
+    /**
+     * Renders the Minimalist Grid View (Pre-2026)
+     */
+    function renderGridView(container, wishes) {
+        // Header
+        const header = document.createElement('div');
+        header.className = 'flex flex-col items-center justify-center py-8 text-center mb-8';
+        header.innerHTML = `
+            <span class="material-symbols-outlined text-white/20 mb-4 text-3xl">nights_stay</span>
+            <h1 class="text-3xl md:text-4xl font-light text-white mb-2">Wishes for Tomorrow</h1>
+            <p class="text-white/40 text-sm tracking-widest uppercase">Waiting for 2026</p>
+        `;
+        container.appendChild(header);
+
+        if (wishes.length === 0) {
+            container.innerHTML += '<p class="text-center text-white/30 italic mt-12">Be the first to wish...</p>';
+            return;
+        }
+
+        // Grid Container
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto w-full max-w-6xl pb-24';
+
+        wishes.forEach((wish, index) => {
+            const card = document.createElement('div');
+            // Minimalist card style
+            card.className = 'minimal-card bg-transparent border border-white/5 p-8 rounded-xl flex flex-col justify-between min-h-[200px]';
+            card.innerHTML = `
+                <p class="text-xl md:text-2xl text-white/80 font-serif italic leading-relaxed">"${wish.text}"</p>
+                <div class="mt-6 flex items-center gap-3 opacity-40">
+                    <span class="w-8 h-[1px] bg-white"></span>
+                    <p class="text-xs uppercase tracking-widest">${app.getTimeAgo(wish.createdAt)}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
+    }
+
+    /**
+     * Renders the Movie Credits View (Post-2026)
+     */
+    function renderCreditsView(container, wishes) {
+        const mask = document.createElement('div');
+        mask.id = 'creditsContainer';
+        mask.className = 'credits-mask w-full h-full flex justify-center';
+        
+        const content = document.createElement('div');
+        content.id = 'creditsContent';
+        content.className = 'credits-content';
+        
+        // 1. Title
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'text-center px-4 max-w-2xl w-full';
+        titleDiv.innerHTML = `
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">The Hopes of Yesterday</h1>
+            <div class="w-12 h-[1px] bg-primary mx-auto mb-6"></div>
+            <p class="text-primary/80 uppercase tracking-[0.4em] text-xs md:text-sm">Manifested Today</p>
+        `;
+        content.appendChild(titleDiv);
+
+        if (wishes.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'text-white/40 italic';
+            empty.textContent = 'The story is yet to be written...';
+            content.appendChild(empty);
+        } else {
+            // 2. Wishes List
+            wishes.forEach((wish) => {
+                const el = document.createElement('div');
+                el.className = 'text-center px-6 max-w-3xl w-full group';
+                el.innerHTML = `
+                    <p class="text-2xl md:text-4xl text-white/90 font-serif italic font-light leading-relaxed mb-4 group-hover:text-primary transition-colors duration-500">
+                        "${wish.text}"
+                    </p>
+                    <div class="flex items-center justify-center gap-2 text-xs text-white/30 uppercase tracking-[0.2em]">
+                        <span>${app.getTimeAgo(wish.createdAt)}</span>
+                        <span class="w-1 h-1 bg-primary rounded-full"></span>
+                        <span>2025</span>
+                    </div>
+                `;
+                content.appendChild(el);
+            });
+        }
+
+        // 3. Footer
+        const endDiv = document.createElement('div');
+        endDiv.className = 'text-center mt-24 mb-40 opacity-40';
+        endDiv.innerHTML = `
+            <span class="material-symbols-outlined text-4xl mb-4">auto_awesome</span>
+            <p class="text-xs uppercase tracking-widest">One Minute for Tomorrow</p>
+        `;
+        content.appendChild(endDiv);
+
+        mask.appendChild(content);
+        container.appendChild(mask);
+
+        // Setup Animation (WAAPI)
+        // Wait a tick for DOM to render to calculate height
+        requestAnimationFrame(() => {
+            setupAnimation(content, wishes.length);
+        });
+    }
+
+    function setupAnimation(element, itemCount) {
+        const duration = Math.max(25, 10 + (itemCount * 4)); 
+        element.style.animation = `crawl ${duration}s linear infinite`;
+    }
+</script>
+<!-- Inject Keyframes dynamically -->
+<style>
+    @keyframes crawl {
+        from { transform: translateY(100vh); }
+        to { transform: translateY(-100%); }
+    }
+</style>
+</body>
+</html>
 </script>
 </body>
 </html>
