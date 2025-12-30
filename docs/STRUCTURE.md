@@ -19,12 +19,8 @@ one-minute-for-tomorrow/
 │
 ├── src/                         # Frontend source files
 │   ├── pages/                  # HTML pages
-│   │   ├── index.html          # Home page with fireworks
-│   │   ├── writing.html        # Wish writing interface
-│   │   ├── wall.html           # Public wishes gallery
-│   │   ├── visibility.html     # Wish visibility toggle
-│   │   ├── confirmation.html   # Submission confirmation
-│   │   └── landing.html        # Landing page
+│   │   ├── index.html          # Main SPA (Home -> Confirm)
+│   │   └── wall.html           # Public wall of wishes
 │   │
 │   ├── js/                     # JavaScript source files
 │   │   ├── app.js              # Shared utilities and helpers

@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>One Minute for Tomorrow - Main Menu</title>
+    <title>One Minute for Tomorrow</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="../../src/css/styles.css" rel="stylesheet"/>
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
@@ -22,6 +22,7 @@
                         "primary": "#ecb613",
                         "background-light": "#f8f8f6",
                         "background-dark": "#221d10",
+                        "surface-dark": "#2c2616",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"]
@@ -43,115 +44,384 @@
         }
     </script>
     <style>
-        /* Custom utilities for the starry background effect without images */
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-        }
+        /* Shared Styles */
+        body { min-height: max(884px, 100dvh); }
+        .star { position: absolute; background: white; border-radius: 50%; }
 
-        body {
-          min-height: max(884px, 100dvh);
+        /* Writing Page Specific Styles */
+        :root { --input-focus-glow: 0 0 15px rgba(236, 182, 19, 0.3); }
+        #wishInput:focus { box-shadow: var(--input-focus-glow); }
+        @keyframes type-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .typing-animation { animation: type-pulse 2s ease-in-out infinite; }
+        
+        /* Character count bar */
+        .char-count-bar { height: 2px; background: rgba(236, 182, 19, 0.1); border-radius: 1px; overflow: hidden; margin-top: 0.75rem; }
+        .char-count-bar::after { content: ''; display: block; height: 100%; background: linear-gradient(to right, #ecb613, #ecb613); width: var(--bar-width, 0%); transition: width 0.2s ease, background-color 0.3s ease; border-radius: 1px; }
+        .char-count-bar.warning::after { background: linear-gradient(to right, #fbbf24, #fbbf24); }
+        .char-count-bar.critical::after { background: linear-gradient(to right, #f87171, #f87171); }
+        
+        /* Input Progress */
+        .text-progress { position: relative; }
+        .text-progress::after { content: ''; position: absolute; bottom: 0; left: 0; height: 2px; width: 0%; background: linear-gradient(to right, transparent, #ecb613); transition: width 0.3s ease; }
+        .text-progress.full::after { width: 100%; }
+
+        /* Timer Urgency */
+        .urgent-timer { animation: urgent-pulse 1s infinite; }
+        @keyframes urgent-pulse { 0% { text-shadow: 0 0 5px rgba(236, 182, 19, 0.5); } 50% { text-shadow: 0 0 20px rgba(236, 182, 19, 0.8), 0 0 30px rgba(236, 182, 19, 0.6); } 100% { text-shadow: 0 0 5px rgba(236, 182, 19, 0.5); } }
+
+        /* Char Count Colors */
+        .char-count-normal { color: #94a3b8; }
+        .char-count-warning { color: #fbbf24; animation: pulse 1.5s infinite; }
+        .char-count-critical { color: #f87171; animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        /* Layout & Spacing */
+        .writing-container { max-width: 28rem; width: 100%; }
+        .input-container { padding-top: 1.5rem; padding-bottom: 1.5rem; max-height: calc(100vh - 280px); overflow-y: auto; overflow-x: hidden; position: relative; background: radial-gradient(ellipse at center, rgba(236, 182, 19, 0.02) 0%, transparent 70%); transition: background 0.3s ease; }
+        .input-container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 0.75rem; border: 1px solid rgba(236, 182, 19, 0.1); pointer-events: none; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        .input-container:focus-within::before { border-color: rgba(236, 182, 19, 0.5); box-shadow: 0 0 20px rgba(236, 182, 19, 0.15), inset 0 0 20px rgba(236, 182, 19, 0.05); }
+        .input-container:focus-within { background: radial-gradient(ellipse at center, rgba(236, 182, 19, 0.08) 0%, transparent 70%); }
+        
+        #wishInput { font-size: 1.25rem; line-height: 1.75; letter-spacing: -0.01em; transition: color 0.2s ease; }
+        #wishInput::placeholder { opacity: 0.5; }
+        
+        .timer-display { font-size: 2.5rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.05em; }
+        .timer-label { font-size: 0.625rem; letter-spacing: 0.2em; }
+        
+        /* Submit Button */
+        .submit-btn { position: relative; overflow: hidden; }
+        .submit-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.2); transform: translate(-50%, -50%); transition: width 0.6s, height 0.6s; }
+        .submit-btn:active::before { width: 300px; height: 300px; }
+        .submit-btn:hover { transform: translateY(-1px); }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:focus-visible { outline: 2px solid rgba(236, 182, 19, 0.6); outline-offset: 2px; }
+
+        @media (min-width: 768px) { #wishInput { font-size: 1.5rem; } }
+        @media (max-width: 640px) { 
+            .writing-container { padding-left: 1rem; padding-right: 1rem; }
+            .input-container { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+            #wishInput { font-size: 1.125rem; }
+            .timer-display { font-size: 2rem; }
+        }
+        @media (min-width: 1024px) {
+            .writing-container { max-width: 32rem; }
+            #wishInput { font-size: 1.75rem; }
+            .timer-display { font-size: 3rem; }
         }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display antialiased overflow-hidden">
-<div class="relative flex h-screen w-full flex-col justify-between overflow-hidden">
-    <!-- Atmospheric Background Elements -->
-    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <!-- Main Ambient Glow -->
-        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse-slow"></div>
-        <!-- Secondary Ambient Glow -->
-        <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px]"></div>
-        <!-- Floating Particles/Stars (simulated) -->
-        <div class="star w-1 h-1 top-[15%] left-[20%] opacity-20 animate-float"></div>
-        <div class="star w-[2px] h-[2px] top-[45%] left-[80%] opacity-30 animate-float-delayed"></div>
-        <div class="star w-[3px] h-[3px] top-[75%] left-[15%] opacity-10 animate-float"></div>
-        <div class="star w-1 h-1 top-[10%] left-[85%] opacity-20 animate-float-delayed"></div>
+    
+    <!-- Background Elements (Global) -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent">
+        <!-- Static Stars (Minimalist) -->
+        <div class="star w-1 h-1 top-[15%] left-[20%] opacity-20"></div>
+        <div class="star w-[2px] h-[2px] top-[45%] left-[80%] opacity-30"></div>
+        <div class="star w-[3px] h-[3px] top-[75%] left-[15%] opacity-10"></div>
+        <div class="star w-1 h-1 top-[10%] left-[85%] opacity-20"></div>
         <div class="star w-[2px] h-[2px] top-[60%] right-[30%] opacity-15"></div>
+        <!-- Writing Overlay Gradient -->
+        <div id="writing-gradient" class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 hidden"></div>
     </div>
-    
-    <!-- Top Status Bar Area (Empty/Space) -->
-    <div class="z-20 w-full h-12 flex items-center justify-end px-6">
-    </div>
-    
-    <!-- Main Content Area -->
-    <div class="z-10 flex flex-1 flex-col items-center justify-center px-8 w-full max-w-md mx-auto">
-        <!-- Icon/Logo Mark -->
-        <div class="mb-6 opacity-80">
-            <span class="material-symbols-outlined text-primary text-5xl font-light">
-                hourglass_top
-            </span>
-        </div>
 
-        <!-- 2026 Countdown -->
-        <div id="countdown" class="mb-8 flex flex-col items-center">
-            <div class="flex gap-4 text-center">
-                <div class="flex flex-col min-w-[60px]">
-                    <span id="days" class="text-4xl font-light text-primary tabular-nums">00</span>
-                    <span class="text-[9px] uppercase tracking-widest text-white/30">Days</span>
-                </div>
-                <div class="flex flex-col min-w-[60px]">
-                    <span id="hours" class="text-4xl font-light text-primary tabular-nums">00</span>
-                    <span class="text-[9px] uppercase tracking-widest text-white/30">Hours</span>
-                </div>
-                <div class="flex flex-col min-w-[60px]">
-                    <span id="minutes" class="text-4xl font-light text-primary tabular-nums">00</span>
-                    <span class="text-[9px] uppercase tracking-widest text-white/30">Mins</span>
-                </div>
-                <div class="flex flex-col min-w-[60px]">
-                    <span id="seconds" class="text-4xl font-light text-primary tabular-nums">00</span>
-                    <span class="text-[9px] uppercase tracking-widest text-white/30">Secs</span>
-                </div>
+    <!-- VIEW 1: HOME -->
+    <div id="view-home" class="relative flex h-screen w-full flex-col justify-between overflow-hidden transition-opacity duration-500">
+        <!-- Top Status Bar Area -->
+        <div class="z-20 w-full h-12 flex items-center justify-end px-6"></div>
+        
+        <!-- Main Content -->
+        <div class="z-10 flex flex-1 flex-col items-center justify-center px-8 w-full max-w-md mx-auto">
+            <div class="mb-6 opacity-80">
+                <span class="material-symbols-outlined text-primary text-5xl font-light">hourglass_top</span>
             </div>
-            <p id="countdownLabel" class="mt-4 text-[10px] uppercase tracking-[0.4em] text-primary/50 font-medium">Until 2026</p>
-        </div>
 
-        <!-- Headline -->
-        <h1 id="mainHeadline" class="text-neutral-900 dark:text-white text-4xl md:text-5xl font-light leading-tight tracking-tight text-center">
-            One Minute for Tomorrow
-        </h1>
-        <!-- Decorative Divider -->
-        <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
-        <!-- Subtext -->
-        <p id="mainSubtext" class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs mb-6">
-            Choose an option to begin your journey
-        </p>
+            <!-- Countdown -->
+            <div id="countdown" class="mb-8 flex flex-col items-center">
+                <div class="flex gap-4 text-center">
+                    <div class="flex flex-col min-w-[60px]">
+                        <span id="days" class="text-4xl font-light text-primary tabular-nums">00</span>
+                        <span class="text-[9px] uppercase tracking-widest text-white/30">Days</span>
+                    </div>
+                    <div class="flex flex-col min-w-[60px]">
+                        <span id="hours" class="text-4xl font-light text-primary tabular-nums">00</span>
+                        <span class="text-[9px] uppercase tracking-widest text-white/30">Hours</span>
+                    </div>
+                    <div class="flex flex-col min-w-[60px]">
+                        <span id="minutes" class="text-4xl font-light text-primary tabular-nums">00</span>
+                        <span class="text-[9px] uppercase tracking-widest text-white/30">Mins</span>
+                    </div>
+                    <div class="flex flex-col min-w-[60px]">
+                        <span id="seconds" class="text-4xl font-light text-primary tabular-nums">00</span>
+                        <span class="text-[9px] uppercase tracking-widest text-white/30">Secs</span>
+                    </div>
+                </div>
+                <p id="countdownLabel" class="mt-4 text-[10px] uppercase tracking-[0.4em] text-primary/50 font-medium">Until 2026</p>
+            </div>
 
-        <!-- Stats display -->
-        <div id="statsDisplay" class="hidden flex flex-col items-center gap-1 py-4 px-6 bg-surface-dark/30 rounded-2xl border border-primary/5">
-            <span id="totalWishes" class="text-primary text-2xl font-bold">0</span>
-            <span class="text-[10px] uppercase tracking-[0.2em] text-white/30 font-medium">Wishes Shared</span>
-        </div>
-    </div>
-    
-    <!-- Bottom Action Area -->
-    <div class="z-10 w-full px-6 pb-10 md:pb-12 max-w-md mx-auto">
-        <div class="flex flex-col gap-4">
-            <a href="/src/pages/landing.html" id="startWritingBtn" class="relative group w-full flex items-center justify-center h-14 bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98]">
-                <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                <span>Start Writing</span>
-            </a>
-            
-            <a href="/src/pages/wall.html" class="relative group w-full flex items-center justify-center h-14 bg-transparent border border-primary text-primary text-lg font-bold tracking-wide rounded-xl hover:bg-primary/10 transition-all duration-300">
-                <span class="absolute inset-0 w-full h-full rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                <span>View Wall</span>
-            </a>
+            <h1 id="mainHeadline" class="text-neutral-900 dark:text-white text-4xl md:text-5xl font-light leading-tight tracking-tight text-center">
+                One Minute for Tomorrow
+            </h1>
+            <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
+            <p id="mainSubtext" class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs mb-6">
+                Choose an option to begin your journey
+            </p>
+
+            <div id="statsDisplay" class="hidden flex flex-col items-center gap-1 py-4 px-6 bg-surface-dark/30 rounded-2xl border border-primary/5">
+                <span id="totalWishes" class="text-primary text-2xl font-bold">0</span>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-white/30 font-medium">Wishes Shared</span>
+            </div>
         </div>
         
-        <p class="mt-8 text-xs text-center text-neutral-400 dark:text-white/20">
-            One Minute for Tomorrow
-        </p>
+        <!-- Actions -->
+        <div class="z-10 w-full px-6 pb-10 md:pb-12 max-w-md mx-auto">
+            <div class="flex flex-col gap-4">
+                <button onclick="switchView('landing')" id="startWritingBtn" class="relative group w-full flex items-center justify-center h-14 bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98]">
+                    <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span>Start Writing</span>
+                </button>
+                
+                <a href="/src/pages/wall.html" class="relative group w-full flex items-center justify-center h-14 bg-transparent border border-primary text-primary text-lg font-bold tracking-wide rounded-xl hover:bg-primary/10 transition-all duration-300">
+                    <span class="absolute inset-0 w-full h-full rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span>View Wall</span>
+                </a>
+            </div>
+            <p class="mt-8 text-xs text-center text-neutral-400 dark:text-white/20">One Minute for Tomorrow</p>
+        </div>
     </div>
-</div>
+
+    <!-- VIEW 2: LANDING (Motivation) -->
+    <div id="view-landing" class="hidden relative flex h-screen w-full flex-col justify-between overflow-hidden transition-opacity duration-500">
+        <!-- Top Bar -->
+        <div class="z-10 w-full h-12 flex items-center justify-between px-6 mt-4">
+            <button onclick="switchView('home')" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300">
+                <span class="material-symbols-outlined text-neutral-900 dark:text-white hover:text-primary">arrow_back</span>
+            </button>
+        </div>
+        
+        <!-- Content -->
+        <div class="z-10 flex flex-1 flex-col items-center justify-center px-8 w-full max-w-md mx-auto">
+            <div class="mb-10 opacity-80">
+                <span class="material-symbols-outlined text-primary text-5xl font-light">hourglass_top</span>
+            </div>
+            <h1 class="text-neutral-900 dark:text-white text-4xl md:text-5xl font-light leading-tight tracking-tight text-center">
+                You have one minute.<br/>
+                Say what matters.
+            </h1>
+            <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
+            <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs">
+                When the clock starts, be honest.
+            </p>
+        </div>
+        
+        <!-- Actions -->
+        <div class="z-10 w-full px-6 pb-10 md:pb-12 max-w-md mx-auto">
+            <button onclick="switchView('writing')" class="relative group w-full flex items-center justify-center h-14 bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98]">
+                <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <span>Begin</span>
+            </button>
+            <p class="mt-6 text-xs text-center text-neutral-400 dark:text-white/20">One Minute for Tomorrow</p>
+        </div>
+    </div>
+
+    <!-- VIEW 3: WRITING -->
+    <div id="view-writing" class="hidden flex h-screen w-full flex-col relative z-20">
+        <!-- Top Bar / Timer -->
+        <header class="relative z-10 w-full timer-container flex items-center justify-between px-4">
+            <div class="flex items-center gap-2">
+                <button onclick="switchView('landing')" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300" title="Go back">
+                    <span class="material-symbols-outlined text-neutral-900 dark:text-white hover:text-primary">arrow_back</span>
+                </button>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <div class="flex items-baseline gap-1 animate-pulse-slow">
+                    <span id="timer" class="text-primary timer-display font-light tracking-wider font-mono tabular-nums leading-none drop-shadow-md">01:00</span>
+                </div>
+                <p class="text-white/40 timer-label uppercase tracking-[0.2em] font-medium">Remaining</p>
+            </div>
+            <div class="w-10"></div>
+        </header>
+
+        <!-- Writing Area -->
+        <main class="relative z-10 flex-1 flex flex-col w-full px-4 writing-container mx-auto">
+            <div class="flex-1 flex flex-col input-container text-progress mt-4">
+                <textarea id="wishInput" class="w-full flex-1 bg-transparent border-none p-4 font-normal leading-relaxed text-white/90 placeholder:text-white/20 focus:ring-0 focus:outline-none resize-none caret-primary typing-animation" placeholder="Write to your future self... What is your one wish for tomorrow?" maxlength="200"></textarea>
+                <div class="char-count-bar" id="charCountBar"></div>
+            </div>
+            
+            <!-- Bottom Actions -->
+            <div class="flex items-center justify-between pt-4 pb-2 action-bar">
+                <div class="flex items-center gap-2 char-count-container">
+                    <p id="charCount" class="text-white/30 text-xs font-medium tabular-nums char-count-normal">0/200</p>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button onclick="switchView('landing')" type="button" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white/40 hover:text-white/70 transition-colors">
+                        Back
+                    </button>
+                    <button id="submitBtn" onclick="submitWish()" type="button" class="submit-btn flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 transition-all duration-200 text-background-dark rounded-full px-5 py-2 h-10 shadow-[0_0_15px_rgba(236,182,19,0.2)] hover:shadow-[0_0_25px_rgba(236,182,19,0.4)] disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="material-symbols-outlined text-[20px] font-bold">check</span>
+                        <span class="text-sm font-bold tracking-wide">Done</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- VIEW 4: VISIBILITY -->
+    <div id="view-visibility" class="hidden relative flex h-screen w-full flex-col justify-between overflow-hidden transition-opacity duration-500">
+        <!-- Top Bar -->
+        <div class="z-10 w-full h-12 flex items-center justify-between px-6 mt-4">
+            <!-- No back button to writing, as wish is already saved -->
+            <div class="w-10"></div> 
+        </div>
+        
+        <!-- Main Content -->
+        <div class="z-10 flex flex-1 flex-col items-center justify-center px-8 w-full max-w-md mx-auto">
+            <div class="mb-8 opacity-80">
+                <span class="material-symbols-outlined text-primary text-5xl font-light">visibility</span>
+            </div>
+            <h1 class="text-neutral-900 dark:text-white text-4xl font-light leading-tight tracking-tight text-center">
+                Share your wish?
+            </h1>
+            <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
+            <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs">
+                Choose whether others can see your wish on the Wall of Tomorrow
+            </p>
+        </div>
+        
+        <!-- Bottom Choices -->
+        <div class="z-10 w-full px-6 pb-10 md:pb-12 max-w-md mx-auto">
+            <div class="flex flex-col gap-4">
+                <!-- Share Option -->
+                <button onclick="chooseVisibility(true)" class="relative group w-full flex flex-col h-auto bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98] p-4">
+                    <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <div class="relative z-10 flex items-center justify-between">
+                        <div class="text-left">
+                            <div class="font-bold">Yes, Share It</div>
+                            <div class="text-sm font-normal opacity-80">Your wish appears on the wall</div>
+                        </div>
+                        <span class="material-symbols-outlined text-2xl">share</span>
+                    </div>
+                </button>
+                
+                <!-- Private Option -->
+                <button onclick="chooseVisibility(false)" class="relative group w-full flex flex-col h-auto bg-transparent border border-primary text-primary text-lg font-bold tracking-wide rounded-xl hover:bg-primary/10 transition-all duration-300 p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="text-left">
+                            <div class="font-bold">Keep It Private</div>
+                            <div class="text-sm font-normal opacity-60">Your wish stays with you</div>
+                        </div>
+                        <span class="material-symbols-outlined text-2xl">lock</span>
+                    </div>
+                </button>
+            </div>
+            
+            <p class="mt-6 text-xs text-center text-neutral-400 dark:text-white/20">
+                Both choices are saved to your collection
+            </p>
+        </div>
+    </div>
+
+    <!-- VIEW 5: CONFIRMATION -->
+    <div id="view-confirmation" class="hidden relative flex h-screen w-full flex-col justify-between overflow-hidden transition-opacity duration-500">
+        <!-- Top Bar -->
+        <div class="z-10 w-full h-12 flex items-center justify-between px-6 mt-4">
+             <button onclick="switchView('home')" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-all duration-300">
+                <span class="material-symbols-outlined text-neutral-900 dark:text-white hover:text-primary">arrow_back</span>
+            </button>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="z-10 flex flex-1 flex-col items-center justify-center px-8 w-full max-w-md mx-auto">
+            <!-- Status Icon -->
+            <div class="mb-10 opacity-90">
+                <span class="material-symbols-outlined text-primary text-5xl font-light" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+            </div>
+            <h1 class="text-neutral-900 dark:text-white text-4xl font-light leading-tight tracking-tight text-center">
+                Your words live on.
+            </h1>
+            <div class="w-12 h-[1px] bg-primary/40 my-8"></div>
+            
+            <!-- Saved Wish Display -->
+            <div id="wishDisplay" class="hidden w-full mb-8 p-6 bg-surface-dark/40 rounded-2xl border border-primary/10 text-center">
+                <p id="wishDisplayText" class="text-white/80 italic mb-4 leading-relaxed"></p>
+                <div class="flex items-center justify-center gap-4 text-[10px] uppercase tracking-widest text-primary/60">
+                    <span id="wishDisplayDate"></span>
+                    <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                    <span id="wishDisplayVisibility"></span>
+                </div>
+            </div>
+
+            <p class="text-neutral-600 dark:text-white/60 text-lg font-normal leading-relaxed text-center max-w-xs">
+                Thank you for sharing a wish for tomorrow. It has been saved.
+            </p>
+        </div>
+        
+        <!-- Bottom Actions -->
+        <div class="z-10 w-full px-6 pb-10 md:pb-12 max-w-md mx-auto">
+            <div class="flex flex-col gap-3">
+                <a href="/src/pages/wall.html" class="relative group w-full flex items-center justify-center h-14 bg-primary text-background-dark text-lg font-bold tracking-wide rounded-xl shadow-[0_0_20px_rgba(236,182,19,0.2)] hover:shadow-[0_0_30px_rgba(236,182,19,0.4)] transition-all duration-300 transform active:scale-[0.98]">
+                    <span class="absolute inset-0 w-full h-full bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span>View Wall</span>
+                </a>
+                <button onclick="switchView('home')" class="w-full flex items-center justify-center h-12 bg-transparent border border-neutral-300 dark:border-white/20 text-neutral-900 dark:text-white text-base font-semibold tracking-wide rounded-xl hover:bg-neutral-900/5 dark:hover:bg-white/5 transition-all duration-300">
+                    <span>Back to Home</span>
+                </button>
+            </div>
+            <p class="mt-6 text-xs text-center text-neutral-400 dark:text-white/20">
+                One Minute for Tomorrow
+            </p>
+        </div>
+    </div>
 
 <script src="../../src/js/api.js"></script>
 <script src="../../src/js/app.js"></script>
 <script src="../../src/js/fireworks.js"></script>
-<script src="../../src/js/audio-controller.js"></script>
 <script>
+    // --- GLOBAL ---
     const targetDate = new Date('2026-01-01T00:00:00').getTime();
+    
+    // --- WRITING LOGIC ---
+    const timerElement = document.getElementById('timer');
+    const charCountElement = document.getElementById('charCount');
+    const charCountBar = document.getElementById('charCountBar');
+    const wishInput = document.getElementById('wishInput');
+    let timeLeft = 60;
+    let isTimerActive = false;
+    let timerInterval = null;
 
+    function switchView(viewName) {
+        // Hide all views
+        document.getElementById('view-home').classList.add('hidden');
+        document.getElementById('view-landing').classList.add('hidden');
+        document.getElementById('view-writing').classList.add('hidden');
+        document.getElementById('view-visibility').classList.add('hidden');
+        document.getElementById('view-confirmation').classList.add('hidden');
+        document.getElementById('writing-gradient').classList.add('hidden');
+
+        // Reset logic states
+        if (viewName !== 'writing') {
+            stopWritingSession();
+        }
+
+        // Show target view & initialize specific logic
+        if (viewName === 'home') {
+            document.getElementById('view-home').classList.remove('hidden');
+        } else if (viewName === 'landing') {
+            document.getElementById('view-landing').classList.remove('hidden');
+        } else if (viewName === 'writing') {
+            document.getElementById('view-writing').classList.remove('hidden');
+            document.getElementById('writing-gradient').classList.remove('hidden');
+            startWritingSession();
+        } else if (viewName === 'visibility') {
+            document.getElementById('view-visibility').classList.remove('hidden');
+        } else if (viewName === 'confirmation') {
+            document.getElementById('view-confirmation').classList.remove('hidden');
+            initializeConfirmation();
+        }
+    }
+
+    // --- HOME/COUNTDOWN LOGIC ---
     function updateCountdown() {
         const now = new Date().getTime();
         const distance = targetDate - now;
@@ -168,7 +438,6 @@
             
             document.getElementById('mainHeadline').textContent = "The future is here.";
             document.getElementById('mainSubtext').textContent = "Explore the wishes that were left for this moment.";
-            
             return true;
         }
         
@@ -185,31 +454,185 @@
         return false;
     }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Initialize fireworks rain
-        fireworks.init({ autoRain: true });
+    // --- WRITING SESSION LOGIC ---
+    function startWritingSession() {
+        wishInput.value = '';
+        wishInput.focus();
+        updateCharCount(); // reset UI
+        startTimer();
+    }
 
-        // Countdown
-        const isPast = updateCountdown();
-        if (!isPast) {
-            setInterval(updateCountdown, 1000);
+    function stopWritingSession() {
+        if (isTimerActive) {
+            clearInterval(timerInterval);
+            isTimerActive = false;
+        }
+        timeLeft = 60;
+        timerElement.textContent = "01:00";
+        timerElement.classList.remove('urgent-timer');
+    }
+
+    function startTimer() {
+        if (isTimerActive) return;
+        isTimerActive = true;
+        timeLeft = 60;
+        timerElement.textContent = "01:00";
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft <= 10) {
+                timerElement.classList.add('urgent-timer');
+            } else {
+                timerElement.classList.remove('urgent-timer');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                isTimerActive = false;
+                submitWish();
+            }
+        }, 1000);
+    }
+
+    function updateCharCount() {
+        const currentLength = wishInput.value.length;
+        const maxLength = 200;
+        const percentage = (currentLength / maxLength) * 100;
+        
+        charCountElement.textContent = `${currentLength}/${maxLength}`;
+        charCountBar.style.setProperty('--bar-width', percentage + '%');
+
+        if (currentLength > maxLength * 0.9) {
+            charCountElement.className = 'text-xs font-medium tabular-nums char-count-critical';
+            charCountBar.className = 'char-count-bar critical';
+        } else if (currentLength > maxLength * 0.75) {
+            charCountElement.className = 'text-xs font-medium tabular-nums char-count-warning';
+            charCountBar.className = 'char-count-bar warning';
+        } else {
+            charCountElement.className = 'text-xs font-medium tabular-nums char-count-normal';
+            charCountBar.className = 'char-count-bar';
+        }
+    }
+
+    wishInput.addEventListener('input', updateCharCount);
+
+    function submitWish() {
+        const submitBtn = document.getElementById('submitBtn');
+        const text = wishInput.value.trim();
+
+        if (text.length === 0) {
+            wishInput.focus();
+            wishInput.classList.add('ring-2', 'ring-red-500');
+            setTimeout(() => {
+                wishInput.classList.remove('ring-2', 'ring-red-500');
+            }, 2000);
+            return;
         }
 
-        // Load stats
+        if (submitBtn) submitBtn.disabled = true;
+
+        wishAPI.createWish(text, false)
+            .then(response => {
+                if (response.success) {
+                    const wish = {
+                        id: response.data._id,
+                        text: response.data.text,
+                        createdAt: response.data.createdAt,
+                        isPublic: response.data.isPublic
+                    };
+                    sessionStorage.setItem('currentWish', JSON.stringify(wish));
+                    // Navigate to Visibility View
+                    switchView('visibility');
+                    if (submitBtn) submitBtn.disabled = false;
+                } else {
+                    throw new Error(response.message || 'Failed to save wish');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving wish:', error);
+                alert('There was an error saving your wish. Please try again.');
+                if (submitBtn) submitBtn.disabled = false;
+            });
+    }
+
+    // --- VISIBILITY LOGIC ---
+    async function chooseVisibility(isPublic) {
+        const currentWish = JSON.parse(sessionStorage.getItem('currentWish'));
+        if (!currentWish || !currentWish.id) {
+            console.error('No current wish found in session');
+            switchView('home');
+            return;
+        }
+
+        try {
+            const response = await wishAPI.updateWish(currentWish.id, currentWish.text, isPublic);
+            if (response.success) {
+                currentWish.isPublic = isPublic;
+                sessionStorage.setItem('currentWish', JSON.stringify(currentWish));
+                switchView('confirmation');
+            } else {
+                throw new Error(response.message || 'Failed to update wish visibility');
+            }
+        } catch (error) {
+            console.error('Error updating visibility:', error);
+            alert('There was an error saving your choice. Please try again.');
+        }
+    }
+
+    // --- CONFIRMATION LOGIC ---
+    function initializeConfirmation() {
+        fireworks.celebrateSequence(8, 200);
+
+        const currentWish = JSON.parse(sessionStorage.getItem('currentWish'));
+        if (currentWish) {
+            document.getElementById('wishDisplay').classList.remove('hidden');
+            document.getElementById('wishDisplayText').textContent = `"${currentWish.text}"`;
+            document.getElementById('wishDisplayDate').textContent = app.getTimeAgo(currentWish.createdAt);
+            document.getElementById('wishDisplayVisibility').textContent = currentWish.isPublic ? 'Public' : 'Private';
+        }
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', async () => {
+        fireworks.init({ autoRain: false });
+
+        // Check hash for direct view navigation
+        const hash = window.location.hash;
+        if (hash === '#landing') {
+            switchView('landing');
+        } else if (hash === '#writing') {
+            switchView('writing');
+        }
+
+        const isPast = updateCountdown();
+        if (!isPast) setInterval(updateCountdown, 1000);
+
         try {
             const response = await wishAPI.getStats();
             if (response.success && response.data.total > 0) {
                 document.getElementById('statsDisplay').classList.remove('hidden');
                 document.getElementById('totalWishes').textContent = response.data.total;
-                
-                // If there are many wishes, celebrate!
-                if (response.data.total % 10 === 0) {
-                    fireworks.celebrateSequence(5, 400);
-                }
+                if (response.data.total % 10 === 0) fireworks.celebrateSequence(5, 400);
             }
         } catch (error) {
             console.error('Error fetching stats:', error);
         }
+
+        // Prevent accidental navigation if text entered
+        window.addEventListener('beforeunload', function(e) {
+            // Only check if we are in writing view
+            if (!document.getElementById('view-writing').classList.contains('hidden')) {
+                const text = wishInput.value.trim();
+                if (text.length > 0 && !sessionStorage.getItem('currentWish')) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            }
+        });
     });
 </script>
 </body>

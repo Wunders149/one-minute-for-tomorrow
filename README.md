@@ -8,11 +8,7 @@ A beautiful web application where users write and share one-minute wishes for to
 one-minute-for-tomorrow/
 ├── src/                      # Source code
 │   ├── pages/               # HTML pages (entry points)
-│   │   ├── index.html       # Home/menu page
-│   │   ├── landing.html     # Introduction screen
-│   │   ├── writing.html     # 60-second writing screen
-│   │   ├── visibility.html  # Privacy choice screen
-│   │   ├── confirmation.html # Success screen
+│   │   ├── index.html       # Single Page App (Full Creation Flow)
 │   │   └── wall.html        # Shared wishes gallery
 │   ├── js/                  # JavaScript source
 │   │   └── app.js           # Main application logic
@@ -53,12 +49,10 @@ one-minute-for-tomorrow/
 
 ## 📱 Application Flow
 
-1. **Home Screen** (index.html) - Choose to write or view wall
-2. **Landing Screen** (landing.html) - Introduction & motivation
-3. **Writing Screen** (writing.html) - 60-second timer + text input
-4. **Visibility Screen** (visibility.html) - Choose public or private
-5. **Confirmation Screen** (confirmation.html) - Success message
-6. **Wall of Tomorrow** (wall.html) - View all public wishes
+1. **Home/Write Flow** (index.html) - Seamless flow from Menu -> Intro -> 60s Timer
+2. **Visibility Screen** (visibility.html) - Choose public or private
+3. **Confirmation Screen** (confirmation.html) - Success message
+4. **Wall of Tomorrow** (wall.html) - View all public wishes
 
 ## 💾 Data Storage
 
