@@ -1,141 +1,100 @@
 # One Minute for Tomorrow
 
-A beautiful web application where users write and share one-minute wishes for tomorrow.
+A beautiful web application where users write and share one-minute wishes for tomorrow. This project features a full-stack architecture with a Node.js/Express backend and a MongoDB database for persistent storage.
 
-## 📁 Project Structure (Professional)
+## 📁 Project Structure
 
 ```
 one-minute-for-tomorrow/
-├── src/                      # Source code
-│   ├── pages/               # HTML pages (entry points)
-│   │   ├── index.html       # Single Page App (Full Creation Flow)
-│   │   └── wall.html        # Shared wishes gallery
-│   ├── js/                  # JavaScript source
-│   │   └── app.js           # Main application logic
+├── src/                      # Frontend source code
+│   ├── pages/               # HTML entry points
+│   │   ├── index.html       # Single Page App (Home, Writing, Visibility, Confirmation)
+│   │   └── wall.html        # Public wishes gallery (Grid/Credits modes)
+│   ├── js/                  # JavaScript logic
+│   │   ├── api.js           # Backend API client
+│   │   ├── app.js           # Core application utilities
+│   │   └── fireworks.js     # Visual effects engine
 │   ├── css/                 # Stylesheets
-│   │   └── styles.css       # Global styles
-│   └── assets/
-│       └── images/          # Image assets (placeholder)
-├── config/                   # Configuration files
-│   └── server.config.js     # Server configuration
-├── docs/                     # Documentation
-├── server.js                # Node.js HTTP server
-├── package.json             # Project metadata
-├── .env.example             # Environment variables template
-├── .gitignore               # Git ignore rules
-└── README.md                # This file
+│   │   └── styles.css       # Global styles & animations
+│   └── assets/              # Static assets (images, icons)
+├── config/                   # Backend configuration
+│   ├── api-routes.js        # Express API endpoints
+│   └── models.js            # Mongoose (MongoDB) schema
+├── docs/                     # Comprehensive documentation
+├── server.js                # Express server & API entry point
+├── vercel.json              # Vercel deployment configuration
+├── package.json             # Project dependencies & scripts
+└── .env                     # Environment variables (MongoDB URI, Port)
 ```
 
-## � Key Features
+## ✨ Key Features
 
-- ✨ Beautiful minimalist design with Tailwind CSS
-- ⏱️ 60-second timer for focused writing
-- 🔒 Privacy control (share or keep private)
-- 🌙 Dark mode by default
-- 💾 Browser-based persistent storage (localStorage)
-- 👥 Public wall to view shared wishes
-- 📱 Responsive design for all screen sizes
+- **⏱️ 60-Second Focused Writing**: A timed environment to express what truly matters.
+- **🌌 Intelligent Wall of Tomorrow**:
+  - **Pre-2026**: A minimalist grid of hopes.
+  - **Post-2026**: An cinematic "Movie Credits" crawl of the wishes left for the future.
+- **🔒 Privacy First**: Choose to share your wish on the Wall or keep it private.
+- **✨ Visual Atmosphere**: Tailored dark mode, animated stars, and procedural fireworks.
+- **⏳ New Year Countdown**: Live countdown to the year 2026.
+- **💾 Persistent Backend**: All wishes are securely stored in MongoDB.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 14 or higher
+- Node.js (v14 or higher)
+- MongoDB instance (Atlas recommended)
 
-### Installation
+### Installation & Setup
 
-1. Navigate to project directory
-2. Start the server: `node server.js`
-3. Open `http://localhost:3000` in your browser
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-## 📱 Application Flow
+2. **Environment Configuration**:
+   Create a `.env` file in the root directory:
+   ```env
+   PORT=3000
+   MONGODB_URI=your_mongodb_connection_string
+   NODE_ENV=development
+   ```
 
-1. **Home/Write Flow** (index.html) - Seamless flow from Menu -> Intro -> 60s Timer
-2. **Visibility Screen** (visibility.html) - Choose public or private
-3. **Confirmation Screen** (confirmation.html) - Success message
-4. **Wall of Tomorrow** (wall.html) - View all public wishes
-
-## 💾 Data Storage
-
-Wishes stored in browser localStorage with `OneMinuteApp` class:
-
-```javascript
-{
-    id: number,
-    text: string,
-    createdAt: ISO8601,
-    isPublic: boolean
-}
-```
+3. **Start the Server**:
+   ```bash
+   npm start
+   ```
+   Open `http://localhost:3000` in your browser.
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: HTML5, CSS3 (Tailwind), Vanilla JavaScript
-- **Backend**: Node.js (native http module)
-- **Storage**: Browser localStorage
-- **Icons**: Google Material Symbols
+- **Frontend**: HTML5, Tailwind CSS, Vanilla JavaScript (ES6+)
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB via Mongoose ODM
+- **Deployment**: Optimized for Vercel/PM2
+- **Visuals**: Canvas API (Fireworks), CSS Keyframe Animations
 
-## 🎨 Design System
+## 📡 API Reference
 
-- **Primary Color**: `#ecb613` (Gold)
-- **Background Dark**: `#221d10`
-- **Background Light**: `#f8f8f6`
-- **Font**: Inter (sans-serif)
-- **Theme**: Dark mode by default
+The backend exposes a RESTful API at `/api`:
+
+- `GET  /api/wishes` - Fetch wishes (supports `isPublic`, `limit`, `skip` filters)
+- `POST /api/wishes` - Save a new wish
+- `PUT  /api/wishes/:id` - Update wish text or visibility
+- `GET  /api/stats` - Get total/public/private wish counts
+- `GET  /api/health` - Check server and database status
 
 ## 📖 Documentation
 
-Full documentation available in `/docs`:
-- **QUICKSTART.md** - Get running in 2 minutes
-- **TECHNICAL_DOCUMENTATION.md** - Architecture & code details
-- **API_REFERENCE.md** - Function documentation
-- **DEVELOPMENT_GUIDE.md** - Setup for developers
-- **DEPLOYMENT_GUIDE.md** - Production deployment
-
-## 🔧 Development
-
-### File Locations
-
-- **App Logic**: `src/js/app.js` - OneMinuteApp class
-- **Styles**: `src/css/styles.css` - Global CSS
-- **Pages**: `src/pages/` - HTML entry points
-- **Config**: `config/server.config.js` - Server settings
-
-### Navigation Helpers
-
-```javascript
-goTo('landing');   // Navigate to landing.html
-goHome();         // Navigate to index.html
-```
-
-### Environment
-
-Copy `.env.example` to `.env` for local development:
-```
-NODE_ENV=development
-PORT=3000
-```
-
-## 📝 npm Scripts
-
-```bash
-npm start    # Start the server
-npm run dev  # Development mode
-npm test     # Run tests (not yet implemented)
-```
-
-## 🐛 Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| Server won't start | Check Node.js is installed & port 3000 is free |
-| Styles not loading | Clear browser cache & verify CDN access |
-| Pages not found | Verify relative paths in HTML files |
-| Data not persisting | Check browser localStorage is enabled |
+Explore the `/docs` directory for deep dives:
+- **STATUS.md**: Current implementation progress
+- **ARCHITECTURE.md**: System design overview
+- **API_INTEGRATION_EXAMPLES.md**: How to use the frontend `wishAPI`
+- **DEPLOYMENT.md**: Guide for production hosting
 
 ## 📄 License
 
-This project is part of the "One Minute for Tomorrow" New Year's Eve experience.
+This project is part of the "One Minute for Tomorrow" experience.
 
-## 🙏 Credits
+---
 
-Designed and built with attention to detail for meaningful human connection.
+Designed with attention to detail for meaningful human connection. ✨
