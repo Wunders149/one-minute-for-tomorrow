@@ -16,15 +16,6 @@ const wishSchema = new mongoose.Schema({
     default: false,
     index: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    index: true
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  },
   userId: {
     type: String,
     default: null
@@ -36,13 +27,12 @@ const wishSchema = new mongoose.Schema({
     type: Number,
     default: 0
   }
+}, {
+  timestamps: true // Automatically manages createdAt and updatedAt
 });
 
-// Update the updatedAt field before saving
-wishSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
+// Add index for performance on the most common sorting field
+wishSchema.index({ createdAt: -1 });
 
 const Wish = mongoose.model('Wish', wishSchema);
 
