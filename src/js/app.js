@@ -3,44 +3,7 @@
  */
 class OneMinuteApp {
     constructor() {
-        this.timer = 60;
-        this.isRunning = false;
-    }
-
-    // Timer Management
-    startTimer(duration = 60, onTick, onComplete) {
-        this.timer = duration;
-        this.isRunning = true;
-        
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-        }
-        
-        this.timerInterval = setInterval(() => {
-            this.timer--;
-            if (onTick) onTick(this.timer);
-            
-            if (this.timer <= 0) {
-                this.stopTimer();
-                if (onComplete) onComplete();
-            }
-        }, 1000);
-
-        return this.timerInterval;
-    }
-
-    stopTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-        }
-        this.isRunning = false;
-    }
-
-    getFormattedTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        // Core state if needed
     }
 
     // Formatting Utilities
@@ -63,7 +26,23 @@ class OneMinuteApp {
 
     // Navigation
     goTo(page) {
-        window.location.href = `/src/pages/${page}.html`;
+        // If navigating to a view within index.html
+        if (['landing', 'writing', 'visibility', 'confirmation'].includes(page)) {
+            if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                // If we are already on index, use the global switchView if available
+                if (typeof window.switchView === 'function') {
+                    window.switchView(page);
+                } else {
+                    window.location.hash = page;
+                }
+            } else {
+                // Go to index with hash
+                window.location.href = `/src/pages/index.html#${page}`;
+            }
+        } else {
+            // Standard page navigation
+            window.location.href = `/src/pages/${page}.html`;
+        }
     }
 
     goHome() {
