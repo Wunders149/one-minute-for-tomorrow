@@ -1,6 +1,6 @@
 /**
- * Enhanced Firework Animation System
- * Creates celebratory firework bursts for New Year theme
+ * Minimalist Firework Animation System
+ * Optimized for performance with reduced particle counts and simpler effects.
  */
 class FireworkSystem {
     constructor() {
@@ -25,17 +25,15 @@ class FireworkSystem {
         const tx = endX - startX;
         const ty = endY - startY;
 
-        // Calculate distance for consistent velocity
         const distance = Math.sqrt(tx * tx + ty * ty);
-        const velocity = options.velocity || 2.0; // Increased velocity (px per ms)
-        const duration = Math.max(0.2, Math.min(0.8, distance / (velocity * 1000)));
+        const velocity = options.velocity || 1.5;
+        const duration = Math.max(0.3, Math.min(0.8, distance / (velocity * 1000)));
 
         const angle = Math.atan2(tx, -ty);
 
         rocket.style.left = startX + 'px';
         rocket.style.top = startY + 'px';
         rocket.style.backgroundColor = color;
-        rocket.style.color = color;
         rocket.style.setProperty('--tx', tx + 'px');
         rocket.style.setProperty('--ty', ty + 'px');
         rocket.style.setProperty('--rotate', angle + 'rad');
@@ -50,90 +48,46 @@ class FireworkSystem {
                 this.rockets = this.rockets.filter(r => r !== rocket);
             }
 
-            // Create the firework burst
-            const burstType = options.burstType || 'circle';
+            // Create a small, optimized burst
             this.createFirework(endX, endY, {
                 color: color,
-                burstType: burstType,
-                particleCount: options.particleCount || 80 + Math.random() * 40
+                particleCount: options.particleCount || 15 + Math.random() * 10
             });
         }, duration * 1000);
     }
 
     /**
-     * Create a firework burst at specified coordinates
+     * Create a simple firework burst
      */
     createFirework(x, y, options = {}) {
-        const particleCount = options.particleCount || 80 + Math.random() * 40;
-        const colors = this.colors;
-        const burstType = options.burstType || 'circle';
-        const baseColor = options.color || colors[Math.floor(Math.random() * colors.length)];
+        // Slightly increased particle count for visibility but still low
+        const particleCount = options.particleCount || 25 + Math.random() * 15;
+        const baseColor = options.color || this.colors[Math.floor(Math.random() * this.colors.length)];
 
-        // Create central burst effect
-        this.createCentralBurst(x, y, baseColor);
-
-        // Create particles based on burst type
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
-            particle.className = 'firework-particle enhanced';
+            particle.className = 'firework-particle';
 
-            // Determine particle color (can be base color or variation)
-            const color = Math.random() > 0.7 ? colors[Math.floor(Math.random() * colors.length)] : baseColor;
-            const size = 2 + Math.random() * 3; // Random size
-
-            // Calculate position and velocity based on burst type
-            let angle, velocity, tx, ty;
-
-            switch(burstType) {
-                case 'ring':
-                    // Ring pattern - particles on the perimeter
-                    angle = (Math.PI * 2 * i) / particleCount;
-                    velocity = 100 + Math.random() * 150;
-                    tx = Math.cos(angle) * velocity;
-                    ty = Math.sin(angle) * velocity;
-                    break;
-                case 'star':
-                    // Star pattern - alternating long and short particles
-                    angle = (Math.PI * 2 * i) / particleCount;
-                    const isLong = i % 5 === 0; // Every 5th particle is longer
-                    velocity = isLong ? 200 + Math.random() * 100 : 80 + Math.random() * 80;
-                    tx = Math.cos(angle) * velocity;
-                    ty = Math.sin(angle) * velocity;
-                    break;
-                case 'heart':
-                    // Heart pattern
-                    const t = (Math.PI * 2 * i) / particleCount;
-                    const scale = 100 + Math.random() * 100;
-                    tx = 16 * Math.pow(Math.sin(t), 3) * scale;
-                    ty = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * scale;
-                    break;
-                case 'circle':
-                default:
-                    // Standard circular burst
-                    angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
-                    velocity = 150 + Math.random() * 200;
-                    tx = Math.cos(angle) * velocity;
-                    ty = Math.sin(angle) * velocity;
-                    break;
-            }
-
-            const duration = 1.5 + Math.random() * 1.5;
+            const size = 1.5 + Math.random() * 2;
+            const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
+            const velocity = 100 + Math.random() * 120;
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity;
+            const duration = 1.0 + Math.random() * 0.5;
 
             particle.style.left = x + 'px';
             particle.style.top = y + 'px';
-            particle.style.backgroundColor = color;
-            particle.style.color = color;
+            particle.style.backgroundColor = baseColor;
+            particle.style.color = baseColor;
             particle.style.width = size + 'px';
             particle.style.height = size + 'px';
             particle.style.setProperty('--tx', tx + 'px');
             particle.style.setProperty('--ty', ty + 'px');
-            particle.style.setProperty('--duration', duration + 's');
-            particle.style.animation = `firework-burst-enhanced ${duration}s linear forwards`;
+            particle.style.animation = `firework-burst ${duration}s ease-out forwards`;
 
             this.container.appendChild(particle);
             this.particles.push(particle);
 
-            // Remove particle after animation completes
             setTimeout(() => {
                 if (particle.parentNode) {
                     particle.remove();
@@ -143,79 +97,33 @@ class FireworkSystem {
         }
     }
 
-    createCentralBurst(x, y, color) {
-        const burst = document.createElement('div');
-        burst.className = 'firework-burst enhanced';
-        burst.style.left = x + 'px';
-        burst.style.top = y + 'px';
-        burst.style.background = `radial-gradient(circle, ${color || '#fff'} 0%, rgba(255,255,255,0.5) 20%, transparent 70%)`;
-
-        this.container.appendChild(burst);
-        setTimeout(() => {
-            if (burst.parentNode) {
-                burst.remove();
-            }
-        }, 600);
-    }
-
     createRandomFirework() {
         const endX = Math.random() * window.innerWidth;
-        const endY = Math.random() * (window.innerHeight * 0.5) + window.innerHeight * 0.05;
-        const startX = endX + (Math.random() - 0.5) * 500;
+        const endY = Math.random() * (window.innerHeight * 0.4) + window.innerHeight * 0.1;
+        const startX = endX + (Math.random() - 0.5) * 200;
         const startY = window.innerHeight + 10;
 
-        // Randomly select a burst type
-        const burstTypes = ['circle', 'ring', 'star', 'heart'];
-        const burstType = burstTypes[Math.floor(Math.random() * burstTypes.length)];
-
-        this.launch(startX, startY, endX, endY, { burstType: burstType });
+        this.launch(startX, startY, endX, endY);
     }
 
-    celebrateSequence(count = 5, delay = 150) {
+    celebrateSequence(count = 3, delay = 200) {
         for (let i = 0; i < count; i++) {
             setTimeout(() => this.createRandomFirework(), delay * i);
         }
     }
 
-    /**
-     * Start a continuous rain of fireworks
-     */
     startRain() {
+        // Much lower frequency for continuous rain
         const rainInterval = setInterval(() => {
-            // Randomly trigger bursts or sequences
-            if (Math.random() < 0.4) {
-                this.celebrateSequence(Math.floor(Math.random() * 3) + 1, 100);
+            if (Math.random() < 0.2) {
+                this.createRandomFirework();
             }
-        }, 1500);
+        }, 3000);
         return rainInterval;
     }
 
-    /**
-     * Create a special celebration sequence
-     */
-    specialCelebration() {
-        // Create a sequence of different firework types
-        const types = ['circle', 'ring', 'star', 'heart'];
-        for (let i = 0; i < 8; i++) {
-            setTimeout(() => {
-                const endX = Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1;
-                const endY = Math.random() * (window.innerHeight * 0.4) + window.innerHeight * 0.1;
-                const startX = endX + (Math.random() - 0.5) * 300;
-                const startY = window.innerHeight + 10;
-
-                this.launch(startX, startY, endX, endY, {
-                    burstType: types[i % types.length],
-                    particleCount: 100 + Math.random() * 50
-                });
-            }, i * 300);
-        }
-    }
-
-    /**
-     * Initialize automatic triggers
-     */
     init(options = {}) {
-        const { autoRain = true, clickTrigger = true } = options;
+        const { autoRain = false, clickTrigger = true } = options;
 
         if (autoRain) {
             this.startRain();
@@ -225,44 +133,21 @@ class FireworkSystem {
             document.addEventListener('mousedown', (e) => {
                 const target = e.target.closest('button') || e.target.closest('a');
                 if (target) {
-                    // Trigger a "mini-rain" on click
-                    for (let i = 0; i < 3; i++) {
-                        setTimeout(() => {
-                            const offsetX = (Math.random() - 0.5) * 200;
-                            const offsetY = (Math.random() - 0.5) * 100;
-                            const originX = e.clientX + (Math.random() - 0.5) * 300;
-
-                            this.launch(originX, window.innerHeight + 10, e.clientX + offsetX, e.clientY + offsetY, {
-                                particleCount: 40 + Math.random() * 30
-                            });
-                        }, i * 100);
-                    }
+                    // Just one small burst on click
+                    this.createFirework(e.clientX, e.clientY, {
+                        particleCount: 15
+                    });
                 }
             });
         }
     }
 
-    /**
-     * Clear all active fireworks
-     */
     clear() {
-        // Remove all particles
-        this.particles.forEach(particle => {
-            if (particle.parentNode) {
-                particle.remove();
-            }
-        });
+        this.particles.forEach(p => p.parentNode && p.remove());
         this.particles = [];
-
-        // Remove all rockets
-        this.rockets.forEach(rocket => {
-            if (rocket.parentNode) {
-                rocket.remove();
-            }
-        });
+        this.rockets.forEach(r => r.parentNode && r.remove());
         this.rockets = [];
     }
 }
 
-// Global instance
 const fireworks = new FireworkSystem();

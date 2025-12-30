@@ -1,166 +1,56 @@
-/* Firework Animations */
+/* Minimalist Firework Animations */
 @keyframes firework-burst {
     0% {
         transform: translate(0, 0) scale(1);
         opacity: 1;
     }
-    30% {
-        opacity: 1;
-    }
     100% {
-        transform: translate(var(--tx), calc(var(--ty) + 80px)) scale(0);
+        transform: translate(var(--tx), var(--ty)) scale(0.3);
         opacity: 0;
-    }
-}
-
-@keyframes firework-burst-enhanced {
-    0% {
-        transform: translate(0, 0);
-        opacity: 1;
-        box-shadow: 0 0 10px 2px currentColor;
-    }
-    30% {
-        opacity: 1;
-        box-shadow: 0 0 15px 3px currentColor;
-    }
-    70% {
-        opacity: 0.8;
-    }
-    100% {
-        transform: translate(var(--tx), var(--ty));
-        opacity: 0;
-        box-shadow: 0 0 5px 1px currentColor;
     }
 }
 
 @keyframes rocket-launch {
     0% {
-        transform: translate(0, 0) rotate(var(--rotate, 0rad)) scale(1.2);
-        opacity: 1;
-        filter: brightness(2) blur(1px);
-    }
-    10% {
-        filter: brightness(1.2) blur(0.5px);
-    }
-    90% {
+        transform: translate(0, 0) rotate(var(--rotate, 0rad));
         opacity: 1;
     }
     100% {
-        transform: translate(var(--tx), var(--ty)) rotate(var(--rotate, 0rad)) scale(0.2);
+        transform: translate(var(--tx), var(--ty)) rotate(var(--rotate, 0rad));
         opacity: 0;
     }
 }
 
-@keyframes firework-flash {
-    0% {
-        transform: translate(-50%, -50%) scale(0.1);
-        opacity: 0;
-    }
-    5% {
-        opacity: 0.8;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(2.5);
-        opacity: 0;
-    }
-}
-
-@keyframes firework-trail {
-    0% {
-        transform: translate(0, 0);
-        opacity: 1;
-        width: 2px;
-        height: 2px;
-    }
-    100% {
-        transform: translate(var(--tx), var(--ty));
-        opacity: 0;
-        width: 1px;
-        height: 1px;
-    }
+@keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.2); }
 }
 
 .firework-particle {
     position: fixed !important;
     pointer-events: none !important;
-    width: 3px !important;
-    height: 3px !important;
     border-radius: 50% !important;
     z-index: 9999 !important;
-    box-shadow: 0 0 10px 1px currentColor;
+    box-shadow: 0 0 4px 1px currentColor; /* Subtle glow */
     will-change: transform, opacity;
-}
-
-.firework-particle.enhanced {
-    position: fixed !important;
-    pointer-events: none !important;
-    border-radius: 50% !important;
-    z-index: 9999 !important;
-    box-shadow: 0 0 15px 3px currentColor;
-    will-change: transform, opacity;
-    animation-timing-function: linear !important;
-}
-
-.firework-particle.enhanced::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.7;
-    filter: blur(2px);
-    transform: translate(-50%, -50%);
-    animation: firework-trail var(--duration) linear forwards;
 }
 
 .firework-rocket {
     position: fixed !important;
     pointer-events: none !important;
-    width: 2px !important;
-    height: 10px !important;
+    width: 1px !important;
+    height: 4px !important;
     border-radius: 1px !important;
     z-index: 9998 !important;
+    background-color: #fff !important;
     will-change: transform, opacity;
 }
 
-/* Rocket flame/trail */
-.firework-rocket::after {
-    content: '';
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 6px;
-    height: 30px;
-    background: linear-gradient(to bottom, white, currentColor 20%, transparent 80%);
-    filter: blur(3px);
-    opacity: 0.9;
-    border-radius: 50%;
+.star {
+    animation: twinkle var(--duration, 4s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
 }
 
-.firework-burst {
-    position: fixed !important;
-    width: 60px !important;
-    height: 60px !important;
-    pointer-events: none !important;
-    z-index: 9997 !important;
-    border-radius: 50% !important;
-    background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0.5) 20%, transparent 70%) !important;
-    animation: firework-flash 0.5s cubic-bezier(0.1, 0, 0, 1) forwards !important;
-}
-
-.firework-burst.enhanced {
-    position: fixed !important;
-    width: 80px !important;
-    height: 80px !important;
-    pointer-events: none !important;
-    z-index: 9997 !important;
-    border-radius: 50% !important;
-    animation: firework-flash 0.6s cubic-bezier(0.1, 0, 0, 1) forwards !important;
-}
 
 /* Base Styles */
 :root {
