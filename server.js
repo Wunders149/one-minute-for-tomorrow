@@ -31,20 +31,23 @@ app.use('/src', express.static(path.join(__dirname, 'src'), staticOptions));
 app.use('/assets', express.static(path.join(__dirname, 'assets'), staticOptions));
 
 // MongoDB Connection
-if (!MONGODB_URI) {
-  console.error('✗ Error: MONGODB_URI environment variable is not defined.');
-  console.error('  Please create a .env file with your MongoDB connection string.');
-  process.exit(1);
-}
+const connectDB = async () => {
+  if (!MONGODB_URI) {
+    console.warn('⚠️ Warning: MONGODB_URI environment variable is not defined.');
+    console.warn('   API routes requiring a database will fail.');
+    return;
+  }
 
-mongoose.connect(MONGODB_URI)
-.then(() => {
-  console.log('✓ Connected to MongoDB');
-})
-.catch(err => {
-  console.error('✗ MongoDB connection error:', err);
-  process.exit(1);
-});
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log('✓ Connected to MongoDB');
+  } catch (err) {
+    console.error('✗ MongoDB connection error:', err);
+    // Do not exit process in serverless environment
+  }
+};
+
+connectDB();
 
 // API Routes
 const apiRoutes = require('./config/api-routes');
