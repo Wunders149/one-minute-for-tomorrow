@@ -20,6 +20,7 @@ class FireworkSystem {
         this.particles = [];
         this.rockets = [];
         this.drones = []; // { element, index }
+        this.timeouts = [];
 
         // Inject Styles dynamically
         this.injectStyles();
@@ -376,7 +377,7 @@ class FireworkSystem {
 
     // --- ORCHESTRATION ---
 
-    startDroneShowSequence() {
+    startDroneShowSequence(loop = false) {
         if (this.isStopping) return;
         
         const droneCount = 80; // More drones for better shapes
@@ -405,7 +406,7 @@ class FireworkSystem {
 
         // Exit or Loop
         const exitTimeout = setTimeout(() => {
-            if (this.isStopping) {
+            if (this.isStopping || !loop) {
                 this.drones.forEach(d => {
                     d.style.opacity = '0';
                     d.style.top = '-100px';
@@ -421,7 +422,7 @@ class FireworkSystem {
                     d.style.opacity = '0';
                 });
                 const loopTimeout = setTimeout(() => {
-                     this.startDroneShowSequence();
+                     this.startDroneShowSequence(true);
                 }, 2000);
                 this.timeouts.push(loopTimeout);
             }
@@ -433,7 +434,7 @@ class FireworkSystem {
     celebrateSequence(count = 5, delay = 300, withDrones = false) {
         // 1. Launch Drone Show (Optional)
         if (withDrones) {
-            this.startDroneShowSequence();
+            this.startDroneShowSequence(false);
         }
 
         // 2. Launch Fireworks
@@ -450,7 +451,7 @@ class FireworkSystem {
         this.timeouts = [];
         
         // 1. Start Drone Loop
-        this.startDroneShowSequence();
+        this.startDroneShowSequence(true);
 
         // 2. Start Firework Rain
         this.rainInterval = setInterval(() => {
