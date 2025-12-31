@@ -118,6 +118,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         fireworks.init({ autoRain: false }); // Minimalist: No rain unless special event
+        
+        // Trigger festive drone show on Wall load
+        setTimeout(() => {
+            fireworks.celebrateSequence(5, 500, true); // true = enable drones
+        }, 500);
+
         loadPublicWishes();
     });
 
