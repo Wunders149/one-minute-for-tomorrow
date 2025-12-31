@@ -377,6 +377,8 @@ class FireworkSystem {
     // --- ORCHESTRATION ---
 
     startDroneShowSequence() {
+        if (this.isStopping) return;
+        
         const droneCount = 80; // More drones for better shapes
         this.ensureDrones(droneCount);
 
@@ -394,22 +396,38 @@ class FireworkSystem {
         ];
 
         timeline.forEach(step => {
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
+                if (this.isStopping) return;
                 this.formShape(step.shape, centerX, centerY, scale);
             }, step.delay);
+            this.timeouts.push(timeout);
         });
 
-        // Exit
-        setTimeout(() => {
-            this.drones.forEach(d => {
-                d.style.opacity = '0';
-                d.style.top = '-100px';
-            });
-            setTimeout(() => {
-                this.drones.forEach(d => d.remove());
-                this.drones = [];
-            }, 2000);
+        // Exit or Loop
+        const exitTimeout = setTimeout(() => {
+            if (this.isStopping) {
+                this.drones.forEach(d => {
+                    d.style.opacity = '0';
+                    d.style.top = '-100px';
+                });
+                const cleanup = setTimeout(() => {
+                    this.drones.forEach(d => d.remove());
+                    this.drones = [];
+                }, 2000);
+                this.timeouts.push(cleanup);
+            } else {
+                // Loop
+                this.drones.forEach(d => {
+                    d.style.opacity = '0';
+                });
+                const loopTimeout = setTimeout(() => {
+                     this.startDroneShowSequence();
+                }, 2000);
+                this.timeouts.push(loopTimeout);
+            }
         }, 21000);
+        
+        this.timeouts.push(exitTimeout);
     }
 
     celebrateSequence(count = 5, delay = 300, withDrones = false) {
@@ -427,13 +445,44 @@ class FireworkSystem {
         }, delay);
     }
 
+    startContinuousShow() {
+        this.isStopping = false;
+        this.timeouts = [];
+        
+        // 1. Start Drone Loop
+        this.startDroneShowSequence();
+
+        // 2. Start Firework Rain
+        this.rainInterval = setInterval(() => {
+            if (Math.random() < 0.3) { // Increased frequency for "show" feel
+                this.createRandomFirework();
+            }
+        }, 1500);
+    }
+
+    stopShow() {
+        this.isStopping = true;
+        
+        // Clear Intervals
+        if (this.rainInterval) clearInterval(this.rainInterval);
+        
+        // Clear Timeouts
+        if (this.timeouts) {
+            this.timeouts.forEach(t => clearTimeout(t));
+            this.timeouts = [];
+        }
+
+        // Remove Elements
+        this.clear();
+    }
+
     startRain() {
-        const rainInterval = setInterval(() => {
+        this.rainInterval = setInterval(() => {
             if (Math.random() < 0.2) {
                 this.createRandomFirework();
             }
         }, 3000);
-        return rainInterval;
+        return this.rainInterval;
     }
 
     init(options = {}) {

@@ -117,13 +117,10 @@
 <script src="../../src/js/fireworks.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fireworks.init({ autoRain: false }); // Minimalist: No rain unless special event
+        // Initial gentle rain
+        fireworks.init({ autoRain: false }); 
         
-        // Trigger festive drone show on Wall load
-        setTimeout(() => {
-            fireworks.celebrateSequence(5, 500, true); // true = enable drones
-        }, 500);
-
+        // Load wishes will determine the show mode
         loadPublicWishes();
     });
 
@@ -154,11 +151,22 @@
                 container.classList.remove('px-4', 'pt-20', 'pb-24', 'overflow-y-auto');
                 container.classList.add('overflow-hidden');
                 
+                // Start the Grand Show
+                fireworks.startContinuousShow();
+
                 publicWishes = shuffleArray(publicWishes);
                 renderCreditsView(container, publicWishes);
             } 
             // --- MODE 2: PRESENT (Minimalist Grid) ---
             else {
+                // Gentle background rain
+                fireworks.startRain();
+                
+                // Optional opening celebration
+                setTimeout(() => {
+                    fireworks.celebrateSequence(5, 500, false);
+                }, 500);
+
                 renderGridView(container, publicWishes);
             }
 
@@ -172,6 +180,7 @@
      * Renders the Minimalist Grid View (Pre-2026)
      */
     function renderGridView(container, wishes) {
+        // ... (Header logic same as before) ...
         // Header
         const header = document.createElement('div');
         header.className = 'flex flex-col items-center justify-center py-8 text-center mb-8';
@@ -212,6 +221,7 @@
      * Renders the Movie Credits View (Post-2026)
      */
     function renderCreditsView(container, wishes) {
+        // ... (Credits structure) ...
         const mask = document.createElement('div');
         mask.id = 'creditsContainer';
         mask.className = 'credits-mask w-full h-full flex justify-center';
@@ -235,6 +245,8 @@
             empty.className = 'text-white/40 italic';
             empty.textContent = 'The story is yet to be written...';
             content.appendChild(empty);
+            // Stop show immediately if no wishes
+             setTimeout(() => fireworks.stopShow(), 5000);
         } else {
             // 2. Wishes List
             wishes.forEach((wish) => {
@@ -271,11 +283,18 @@
         requestAnimationFrame(() => {
             setupAnimation(content, wishes.length);
         });
+        
+        // Stop show when animation ends
+        content.addEventListener('animationend', () => {
+             console.log('Credits finished. Stopping show.');
+             fireworks.stopShow();
+        });
     }
 
     function setupAnimation(element, itemCount) {
+        // Run ONCE to satisfy "stop when all wishes displayed"
         const duration = Math.max(25, 10 + (itemCount * 4)); 
-        element.style.animation = `crawl ${duration}s linear infinite`;
+        element.style.animation = `crawl ${duration}s linear 1 forwards`;
     }
 </script>
 <!-- Inject Keyframes dynamically -->
