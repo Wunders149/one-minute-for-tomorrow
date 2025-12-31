@@ -31,23 +31,54 @@ app.use('/src', express.static(path.join(__dirname, 'src'), staticOptions));
 app.use('/assets', express.static(path.join(__dirname, 'assets'), staticOptions));
 
 // MongoDB Connection
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
 const connectDB = async () => {
   if (!MONGODB_URI) {
     console.warn('⚠️ Warning: MONGODB_URI environment variable is not defined.');
-    console.warn('   API routes requiring a database will fail.');
-    return;
+    return null;
+  }
+
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false, // Disable Mongoose buffering to fail fast if not connected
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log('✓ Connected to MongoDB');
+      return mongoose;
+    });
   }
 
   try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('✓ Connected to MongoDB');
-  } catch (err) {
-    console.error('✗ MongoDB connection error:', err);
-    // Do not exit process in serverless environment
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    console.error('✗ MongoDB connection error:', e);
+    throw e;
   }
+
+  return cached.conn;
 };
 
-connectDB();
+// Ensure DB is connected for API routes
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection failed handling request');
+    next(error);
+  }
+});
 
 // API Routes
 const apiRoutes = require('./config/api-routes');
