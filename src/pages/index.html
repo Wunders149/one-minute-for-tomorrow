@@ -95,6 +95,7 @@
 
             <!-- Countdown -->
             <div id="countdown" class="mb-8 flex flex-col items-center">
+                <p id="countdownLabel" class="text-neutral-500 dark:text-white/40 text-sm uppercase tracking-widest mb-4">Time Remaining</p>
                 <div class="flex gap-4 text-center">
                     <div class="flex flex-col min-w-[60px]">
                         <span id="days" class="text-4xl font-light text-primary tabular-nums">00</span>
@@ -118,6 +119,7 @@
             <h1 id="mainHeadline" class="text-neutral-900 dark:text-white text-4xl font-light leading-tight tracking-tight text-center animate-float">
                 One Minute for Tomorrow
             </h1>
+            <p id="mainSubtext" class="text-neutral-600 dark:text-white/60 text-lg font-light text-center mt-4"></p>
             <div class="w-8 h-[1px] bg-primary/20 my-8"></div>
         </div>
         
@@ -359,13 +361,25 @@
             document.getElementById('hours').textContent = "00";
             document.getElementById('minutes').textContent = "00";
             document.getElementById('seconds').textContent = "00";
-            document.getElementById('countdownLabel').textContent = "Welcome to 2026";
+            
+            const countdownLabel = document.getElementById('countdownLabel');
+            if (countdownLabel) countdownLabel.textContent = "Welcome to 2026";
             
             const btn = document.getElementById('startWritingBtn');
             if (btn) btn.classList.add('hidden');
             
-            document.getElementById('mainHeadline').textContent = "The future is here.";
-            document.getElementById('mainSubtext').textContent = "Explore the wishes that were left for this moment.";
+            const mainHeadline = document.getElementById('mainHeadline');
+            if (mainHeadline) mainHeadline.textContent = "The future is here.";
+            
+            const mainSubtext = document.getElementById('mainSubtext');
+            if (mainSubtext) mainSubtext.textContent = "Explore the wishes that were left for this moment.";
+
+            // Celebration
+            if (!window.celebrated) {
+                window.celebrated = true;
+                fireworks.celebrateSequence(15, 300);
+            }
+            
             return true;
         }
         
