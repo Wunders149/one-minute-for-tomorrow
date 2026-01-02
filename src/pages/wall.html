@@ -233,7 +233,8 @@
         mask.id = 'creditsContainer';
         mask.className = 'credits-mask w-full h-full flex justify-center';
         
-        const content = document.createElement('div');
+        // Changed to let so it can be updated
+        let content = document.createElement('div');
         content.id = 'creditsContent';
         content.className = 'credits-content';
         
@@ -292,12 +293,16 @@
         });
         
         // Stop show when animation ends -> NOW LOOP
-        content.addEventListener('animationend', function handleEnd() {
+        content.addEventListener('animationend', function handleEnd(e) {
              console.log('Credits finished. Restarting.');
              
+             const oldContent = e.target;
+             // Ensure we are replacing a valid child
+             if (oldContent.parentNode !== mask) return;
+
              // To restart CSS animation, we can clone the node
-             const newContent = content.cloneNode(true);
-             mask.replaceChild(newContent, content);
+             const newContent = oldContent.cloneNode(true);
+             mask.replaceChild(newContent, oldContent);
              
              // Re-attach listener
              newContent.addEventListener('animationend', handleEnd);
@@ -307,7 +312,7 @@
                  setupAnimation(newContent, wishes.length);
              });
              
-             // Update reference for next time
+             // Update reference
              content = newContent;
         });
     }
