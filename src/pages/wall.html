@@ -136,7 +136,8 @@
         const container = document.getElementById('mainContainer');
         
         try {
-            const response = await wishAPI.getWishes(true);
+            // Fetch ALL wishes (limit set to 10000)
+            const response = await wishAPI.getWishes(true, 10000);
             if (!response.success) throw new Error(response.message);
             
             let publicWishes = response.data;
@@ -147,6 +148,10 @@
 
             // --- MODE 1: FUTURE (Movie Credits) ---
             if (isFuture) {
+                // Hide "Write" option in nav
+                const writeLink = document.querySelector('a[href*="#landing"]');
+                if (writeLink) writeLink.style.display = 'none';
+
                 // Remove padding/overflow from main container for full-screen effect
                 container.classList.remove('px-4', 'pt-20', 'pb-24', 'overflow-y-auto');
                 container.classList.add('overflow-hidden');
@@ -293,7 +298,8 @@
 
     function setupAnimation(element, itemCount) {
         // Run ONCE to satisfy "stop when all wishes displayed"
-        const duration = Math.max(25, 10 + (itemCount * 4)); 
+        // Speed up by 1.5x (divide duration by 1.5)
+        const duration = Math.max(25, 10 + (itemCount * 4)) / 1.5; 
         element.style.animation = `crawl ${duration}s linear 1 forwards`;
     }
 </script>
