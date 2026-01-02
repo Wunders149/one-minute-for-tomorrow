@@ -319,8 +319,8 @@
 
     function setupAnimation(element, itemCount) {
         // Run ONCE to satisfy "stop when all wishes displayed"
-        // Speed up by 10x (divide duration by 10)
-        const duration = Math.max(25, 10 + (itemCount * 4)) / 10; 
+        // Speed up by 15x (divide duration by 15)
+        const duration = Math.max(25, 10 + (itemCount * 4)) / 15; 
         element.style.animation = `crawl ${duration}s linear 1 forwards`;
     }
 </script>
