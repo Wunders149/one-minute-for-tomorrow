@@ -289,10 +289,24 @@
             setupAnimation(content, wishes.length);
         });
         
-        // Stop show when animation ends
-        content.addEventListener('animationend', () => {
-             console.log('Credits finished. Stopping show.');
-             fireworks.stopShow();
+        // Stop show when animation ends -> NOW LOOP
+        content.addEventListener('animationend', function handleEnd() {
+             console.log('Credits finished. Restarting.');
+             
+             // To restart CSS animation, we can clone the node
+             const newContent = content.cloneNode(true);
+             mask.replaceChild(newContent, content);
+             
+             // Re-attach listener
+             newContent.addEventListener('animationend', handleEnd);
+             
+             // Re-apply animation
+             requestAnimationFrame(() => {
+                 setupAnimation(newContent, wishes.length);
+             });
+             
+             // Update reference for next time
+             content = newContent;
         });
     }
 
