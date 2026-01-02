@@ -144,8 +144,8 @@
         }
         
         try {
-            // Fetch ALL wishes (limit set to 10000)
-            const response = await wishAPI.getWishes(true, 10000);
+            // Fetch ALL wishes (limit: 0 means no limit in Mongoose)
+            const response = await wishAPI.getWishes(true, 0);
             if (!response.success) throw new Error(response.message);
             
             let publicWishes = response.data;
