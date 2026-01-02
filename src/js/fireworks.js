@@ -312,8 +312,8 @@ class FireworkSystem {
             const row = Math.floor(i / cols);
             const col = i % cols;
             
-            const xNorm = col / cols; // 0 to 1
-            const yNorm = row / rows; // 0 to 1
+            const xNorm = cols > 1 ? col / (cols - 1) : 0; // 0 to 1
+            const yNorm = rows > 1 ? row / (rows - 1) : 0; // 0 to 1
 
             let color = '#ffffff'; // White default
             
@@ -380,7 +380,7 @@ class FireworkSystem {
     startDroneShowSequence(loop = false) {
         if (this.isStopping) return;
         
-        const droneCount = 80; // More drones for better shapes
+        const droneCount = 100; // 10x10 grid for perfect flag/shape distribution
         this.ensureDrones(droneCount);
 
         const centerX = window.innerWidth / 2;
