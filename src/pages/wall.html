@@ -52,6 +52,7 @@
             position: relative;
             height: 100%;
             overflow: hidden;
+            z-index: 45; /* Above drones (40), below header (50) */
         }
 
         .credits-content {
@@ -295,6 +296,9 @@
         
         // Stop show when animation ends -> NOW LOOP
         content.addEventListener('animationend', function handleEnd(e) {
+             // Filter out bubbling events from children or other animations
+             if (e.animationName !== 'creditsCrawl') return;
+
              console.log('Credits finished. Restarting.');
              
              const oldContent = e.target;
@@ -322,12 +326,12 @@
         // Run ONCE to satisfy "stop when all wishes displayed"
         // Speed up by 15x (divide duration by 15)
         const duration = Math.max(25, 10 + (itemCount * 4)) / 15; 
-        element.style.animation = `crawl ${duration}s linear 1 forwards`;
+        element.style.animation = `creditsCrawl ${duration}s linear 1 forwards`;
     }
 </script>
 <!-- Inject Keyframes dynamically -->
 <style>
-    @keyframes crawl {
+    @keyframes creditsCrawl {
         from { transform: translateY(100vh); }
         to { transform: translateY(-100%); }
     }

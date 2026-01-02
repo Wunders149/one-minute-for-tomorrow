@@ -16,7 +16,16 @@ class FireworkSystem {
             '#F472B6', // Pink
             '#ffffff'  // Pure White
         ];
-        this.container = document.body;
+        
+        // Create dedicated container to decouple from main DOM
+        this.container = document.getElementById('fireworks-canvas');
+        if (!this.container) {
+            this.container = document.createElement('div');
+            this.container.id = 'fireworks-canvas';
+            this.container.style.cssText = 'position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;';
+            document.body.prepend(this.container);
+        }
+
         this.particles = [];
         this.rockets = [];
         this.drones = []; // { element, index }
